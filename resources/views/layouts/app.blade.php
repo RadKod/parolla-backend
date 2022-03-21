@@ -41,7 +41,10 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('questions') }}">{{ __('Questions') }}</a>
+                        <a class="nav-link {{ request()->routeIs('questions') ? 'active' : '' }}"
+                           href="{{ route('questions') }}">
+                            {{ __('Questions') }}
+                        </a>
                     </li>
                 </ul>
 
@@ -61,6 +64,9 @@
                             </li>
                         @endif
                     @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('clear-cache') }}">{{ __('Force Delete Cache') }}</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -68,6 +74,11 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item {{ request()->routeIs('profile') ? 'active' : '' }}"
+                                   href="{{ route('profile') }}">
+                                    {{ __('Profile') }}
+                                </a>
+                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -87,6 +98,14 @@
 
     <main class="py-4">
         <div class="container">
+            @if (session()->has('status'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('status') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
             @if(session()->has('message'))
                 <div class="alert {{session('alert') ?? 'alert-info'}}">
                     {{ session('message') }}
