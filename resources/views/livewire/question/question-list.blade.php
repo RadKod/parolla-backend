@@ -1,5 +1,16 @@
 <div>
     <div class="row">
+        <div class="col-12">
+            @if(session()->has('message'))
+                <div class="alert {{session('alert') ?? 'alert-info'}} alert-dismissible fade show" role="alert">
+                    {{ session('message') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+        </div>
+
         <div class="col-3">
             <h3>{{ __('Questions') }} ({{ $questions->total() }})</h3>
         </div>
@@ -11,13 +22,6 @@
             </button>
         </div>
         @include('livewire.question.inc.modal')
-        <div class="col-12">
-            @if(session()->has('message'))
-                <div class="alert {{session('alert') ?? 'alert-info'}}" style="margin-top:30px;">
-                    {{ session('message') }}
-                </div>
-            @endif
-        </div>
     </div>
 
     <div class="row mt-2">

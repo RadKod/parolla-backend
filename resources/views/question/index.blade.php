@@ -2,7 +2,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            @livewire('question.question-list')
+            <livewire:question.question-list/>
         </div>
     </div>
 @endsection
