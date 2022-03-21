@@ -9,19 +9,29 @@ use Illuminate\Http\JsonResponse;
 class QuestionController extends BaseController
 {
     /**
-     * @return JsonResponse
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|JsonResponse
      */
-    public function index(): JsonResponse
+    public function index()
     {
+
+        $questions = Question::query()
+            ->select('id', 'alphabet_id', 'question', 'answer')
+            ->with(['alphabet'])
+            ->orderBy('alphabet_id')->inRandomOrder()
+            ->toSql();
+        dd($questions);
+        return $questions;
         $questions = Question::query()->with('alphabet')
             ->whereNotIn('id', [])
+            ->groupBy('alphabet_id')
             ->orderBy('alphabet_id')->inRandomOrder()->get()
             ->mapToGroups(function ($item) {
                 return [$item->alphabet_id => $item];
             });
+
         return $this->sendResponse(
             [
-                'date' => date('Y-m-d H:i:s'),
+                'date' => date('Y-m-d'),
                 'questions' => QuestionResource::collection($questions),
             ],
             'Questions retrieved successfully.'

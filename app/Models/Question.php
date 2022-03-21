@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Alphabet;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
@@ -18,6 +19,11 @@ class Question extends Model
     public function alphabet(): BelongsTo
     {
         return $this->belongsTo(Alphabet::class);
+    }
+
+    public function question(): BelongsTo
+    {
+        return $this->belongsTo(__CLASS__, 'id', 'id');
     }
 
     /**
