@@ -1,10 +1,9 @@
 {
-    "name": "laravel/laravel",
+    "name": "radkod/parolla-backend",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "Parolla App Backend",
     "keywords": [
-        "framework",
-        "laravel"
+        "parolla"
     ],
     "license": "MIT",
     "require": {
