@@ -2,9 +2,7 @@
     "name": "radkod/parolla-backend",
     "type": "project",
     "description": "Parolla App Backend",
-    "keywords": [
-        "parolla"
-    ],
+    "keywords": ["parolla"],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
