@@ -1,4 +1,8 @@
 ### Project ###
+/public/css
+/public/img
+/public/js
+/public/mix-manifest.json
 /storage/*.key
 
 ### Laravel ###
