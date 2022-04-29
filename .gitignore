@@ -1,15 +1,48 @@
-.idea
-/node_modules
+### Project ###
+/storage/*.key
+
+### Laravel ###
 /public/hot
 /public/storage
-/storage/*.key
-/vendor
-.env
-.env.backup
-.phpunit.result.cache
-docker-compose.override.yml
 Homestead.json
 Homestead.yaml
-npm-debug.log
-yarn-error.log
+.env
+
+### Composer ###
+/vendor/
 composer.lock
+
+### PHPStorm ###
+.idea
+
+### Node ###
+node_modules/
+npm-debug.log*
+
+### Yarn ###
+yarn-debug.log*
+yarn-error.log*
+
+### PHPUnit ###
+.phpunit.result.cache
+.phpunit.cache
+/build/
+
+### Docker ###
+docker-compose.override.yml
+
+### Linux ###
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon
+
+
