@@ -5,29 +5,45 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 
+/**
+ * An action for creating new user and persist it
+ */
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
 
     /**
-     * Validate and create a newly registered user.
+     * Rules for input to handle this action.
      *
-     * @param  array  $input
-     * @return \App\Models\User
+     * @return array
+     * @noinspection PhpArrayShapeAttributeCanBeAddedInspection
      */
-    public function create(array $input)
+    public function rules(): array
     {
-        Validator::make($input, [
+        return [
             'firstname' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['required', 'accepted'] : '',
-        ])->validate();
+        ];
+    }
+
+    /**
+     * Validate and create a newly registered user.
+     *
+     * @param array $input
+     * @return User
+     * @throws ValidationException
+     */
+    public function create(array $input): User
+    {
+        Validator::make($input, $this->rules())->validate();
 
         return User::create([
             'firstname' => $input['firstname'],
