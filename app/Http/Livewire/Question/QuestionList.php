@@ -46,8 +46,11 @@ class QuestionList extends Component
     public function render()
     {
         /** @var Builder $questions */
-        $questions = Question::query()
-            ->search($this->search_term);
+        $questions = Question::query();
+
+        if ($this->search_term) {
+            $questions = $questions->search($this->search_term);
+        }
 
         if ($this->filter_character) {
             $questions = $questions->forCharacter($this->filter_character);
