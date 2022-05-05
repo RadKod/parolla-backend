@@ -34,10 +34,10 @@
         <div class="col-12 alphabets pt-2 pb-2">
             @foreach($alphabet as $alphabet_item)
                 <button type="button" data-toggle="tooltip" data-placement="top"
-                        title="{{ $alphabet_item->questions->count() }}"
-                        wire:click.prevent="filter_by_alphabet('{{$alphabet_item->id}}')"
-                        class="btn {{$filter_alphabet_id === $alphabet_item->id ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
-                    {{$alphabet_item->name}}
+                        title="{{ $alphabet_item->questionCount }}"
+                        wire:click.prevent="filter_by_alphabet('{{$alphabet_item->character}}')"
+                        class="btn {{$filter_character === $alphabet_item->character ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
+                    {{$alphabet_item->character}}
                 </button>
             @endforeach
         </div>
@@ -60,7 +60,7 @@
                     @foreach($questions as $question)
                         <tr>
                             <td>{{ $question->id }}</td>
-                            <td>{{ $question->alphabet->name }}</td>
+                            <td>{{ $question->character }}</td>
                             <td>{{ $question->question }}</td>
                             <td>{{ $question->answer }}</td>
                             <td>

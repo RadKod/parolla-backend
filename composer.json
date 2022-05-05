@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "ext-json": "*",
+        "calebporzio/sushi": "^2.4",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/fortify": "^1.12",
         "laravel/framework": "^9.10",
@@ -15,7 +17,7 @@
         "laravel/ui": "^3.4",
         "livewire/livewire": "^2.0",
         "mehradsadeghi/laravel-filter-querystring": "^1.1",
-        "ext-json": "*"
+        "ext-intl": "*"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^1.2",

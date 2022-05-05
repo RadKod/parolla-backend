@@ -18,7 +18,7 @@ class QuestionResource extends JsonResource
         return [
             'id' => $this->id,
             'question' => $this->question,
-            'letter' => $this->alphabet->name,
+            'letter' => $this->character,
             'answer' => $this->answer,
         ];
     }

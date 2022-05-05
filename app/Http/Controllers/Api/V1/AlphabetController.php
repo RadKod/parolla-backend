@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Resources\AlphabetResource;
 use App\Models\Alphabet;
+use App\Models\Character;
 use Illuminate\Http\JsonResponse;
 
 class AlphabetController extends BaseController
@@ -13,7 +14,7 @@ class AlphabetController extends BaseController
      */
     public function index(): JsonResponse
     {
-        $alphabet = Alphabet::all();
+        $alphabet = Character::all();
         return $this->sendResponse(
             AlphabetResource::collection($alphabet), 'Alphabets retrieved successfully.'
         );

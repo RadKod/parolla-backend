@@ -34,14 +34,12 @@ class QuestionController extends BaseController
             }
 
             $subFromQuery = Question::query()
-                ->select('id', 'alphabet_id', 'question', 'answer')
+                ->select('id', 'character', 'question', 'answer')
                 ->inRandomOrder()->toSql();
             $questions = Question::query()
-                ->select('id', 'alphabet_id', 'question', 'answer')
+                ->select('id', 'character', 'question', 'answer')
                 ->whereNotIn('id', $not_in_ids)
                 ->from(DB::raw("($subFromQuery) as sub"))
-                ->with(['alphabet'])
-                ->groupBy('alphabet_id')
                 ->get();
 
             Cache::forever($cache_file_name, $questions);

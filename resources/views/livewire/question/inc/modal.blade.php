@@ -21,11 +21,11 @@
                         </div>
                         <div class="col-6">
                             <label for="cr_alphabet_id">Letter</label>
-                            <select class="form-control" id="cr_alphabet_id" wire:model="cr_alphabet_id">
+                            <select class="form-control" id="cr_alphabet_id" wire:model="cr_character">
                                 <option value="">Select Letter</option>
                                 @foreach($alphabet as $alphabet_item)
-                                    <option value="{{ $alphabet_item->id }}">
-                                        {{ $alphabet_item->name }}
+                                    <option value="{{ $alphabet_item->character }}">
+                                        {{ $alphabet_item->character }}
                                     </option>
                                 @endforeach
                             </select>

@@ -2,12 +2,13 @@
 
 namespace App\Http\Livewire\Question;
 
-use App\Models\Alphabet;
+use App\Models\Character;
 use App\Models\Question;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Query\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -21,7 +22,7 @@ class QuestionList extends Component
      * Filter Form Data
      */
     public $search_term;
-    public $filter_alphabet_id;
+    public $filter_character;
     public $confirming_delete_id;
 
     /**
@@ -29,7 +30,7 @@ class QuestionList extends Component
      */
     public $cr_question_id;
     public $cr_question;
-    public $cr_alphabet_id;
+    public $cr_character;
     public $cr_answer;
 
     /**
@@ -44,12 +45,17 @@ class QuestionList extends Component
      */
     public function render()
     {
-        $alphabet = Alphabet::query()->with('questions')->get();
+        /** @var Builder $questions */
         $questions = Question::query()
-            ->with('alphabet')
-            ->search($this->search_term)
-            ->alphabet($this->filter_alphabet_id)
-            ->paginate(10);
+            ->search($this->search_term);
+
+        if ($this->filter_character) {
+            $questions = $questions->forCharacter($this->filter_character);
+        }
+
+        $alphabet = Character::all();
+        $questions = $questions->paginate(10);
+
         return view('livewire.question.question-list', compact('questions', 'alphabet'));
     }
 
@@ -75,13 +81,13 @@ class QuestionList extends Component
     }
 
     /**
-     * @param int $id
+     * @param string $character
      * @return void
      */
-    public function filter_by_alphabet(int $id): void
+    public function filter_by_alphabet(string $character): void
     {
-        $this->filter_alphabet_id = $this->filter_alphabet_id === $id ? '' : $id;
-        $this->cr_alphabet_id = $this->cr_alphabet_id === $id ? '' : $id;
+        $this->filter_character = $this->filter_character === $character ? '' : $character;
+        $this->cr_character = $this->cr_character === $character ? '' : $character;
     }
 
     /**
@@ -114,7 +120,7 @@ class QuestionList extends Component
         $this->cr_question_id = $question->id;
         $this->cr_question = $question->question;
         $this->cr_answer = $question->answer;
-        $this->cr_alphabet_id = $question->alphabet_id;
+        $this->cr_character = $question->character;
     }
 
     /**
@@ -125,7 +131,7 @@ class QuestionList extends Component
         $this->validate([
             'cr_question' => 'required|min:6',
             'cr_answer' => 'required|unique:questions,answer,' . $this->cr_question_id . '|min:1',
-            'cr_alphabet_id' => 'required'
+            'cr_character' => 'required'
         ]);
         if ($this->cr_question_id) {
             $this->update();
@@ -143,7 +149,7 @@ class QuestionList extends Component
         $question = Question::query()->find($this->cr_question_id);
         $question->question = $this->cr_question;
         $question->answer = $this->cr_answer;
-        $question->alphabet_id = $this->cr_alphabet_id;
+        $question->character = $this->cr_character;
         $question->save();
         session()->flash('message', 'Question Updated Successfully.');
     }
@@ -156,7 +162,7 @@ class QuestionList extends Component
         $question = new Question();
         $question->question = $this->cr_question;
         $question->answer = $this->cr_answer;
-        $question->alphabet_id = $this->cr_alphabet_id;
+        $question->character = $this->cr_character;
         $question->save();
         session()->flash('message', 'Question Created Successfully.');
     }

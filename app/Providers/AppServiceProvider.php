@@ -34,9 +34,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->bootCollate();
         $this->bootSchema();
         $this->setupFortify();
         $this->setupJetstream();
+    }
+
+    /**
+     * Set locale of the collation.
+     *
+     * @return void
+     */
+    protected function bootCollate()
+    {
+        setlocale(LC_COLLATE, config('app.locale_collate'));
     }
 
     /**

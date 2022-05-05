@@ -99,6 +99,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Collate Locale
+    |--------------------------------------------------------------------------
+    |
+    | The locale collate will be used for the comparison of the strings. Be sure
+    | about these locales installed on the system. Check with `locale -a` shell
+    | command.
+    |
+    */
+    'locale_collate' => [
+        'tr_TR.UTF-8',
+        'tr_TR',
+        'tr',
+        'turkish'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Faker Locale
     |--------------------------------------------------------------------------
     |

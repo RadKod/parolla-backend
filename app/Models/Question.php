@@ -5,25 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Alphabet;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
     use HasFactory;
     protected $table = 'questions';
     protected $fillable = [
-        'alphabet_id', 'question', 'answer', 'created_at', 'updated_at'
+        'character', 'question', 'answer', 'created_at', 'updated_at'
     ];
 
-    public function alphabet(): BelongsTo
+    public function character(): BelongsTo
     {
-        return $this->belongsTo(Alphabet::class);
-    }
-
-    public function question(): BelongsTo
-    {
-        return $this->belongsTo(__CLASS__, 'id', 'id');
+        return $this->belongsTo(Character::class, 'character', 'character');
     }
 
     /**
@@ -38,13 +31,11 @@ class Question extends Model
 
     /**
      * @param $query
-     * @param $alphabet_id
+     * @param $character
      * @return mixed
      */
-    public function scopeAlphabet($query, $alphabet_id)
+    public function scopeForCharacter($query, $character)
     {
-        if ($alphabet_id) {
-            return $query->where('alphabet_id', $alphabet_id);
-        }
+        return $query->where('character', $character);
     }
 }
