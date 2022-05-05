@@ -1,8 +1,7 @@
 <?php
 
 use App\Http\Controllers\QuestionController;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,24 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+/** @var Router $router */
+/** @noinspection PhpUnhandledExceptionInspection */
+$router = app()->make('router');
 
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::resource('questions', QuestionController::class)->names([
-        'index' => 'questions'
-    ]);
+$router->view('/', 'welcome');
 
-    Route::view('profile','users.profile')->name('profile');
-
-    Route::get('/clear-cache', function() {
-        Artisan::call('cache:clear');
+$router->group(['middleware' => ['auth:sanctum', 'verified']], function (Router $router) {
+    $router->get('questions', [QuestionController::class, 'index'])->name('questions');
+    $router->view('profile', 'users.profile')->name('user.profile');
+    $router->get('clear-cache', function () {
+        cache()->flush();
         return redirect()->back()->with('status', 'Cache Cleared!');
-    })->name('clear-cache');
+    })->name('utils.clear-cache');
+    $router->view('dashboard', 'dashboard');
 });
-
-
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');

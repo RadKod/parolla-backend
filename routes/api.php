@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AlphabetController;
 use App\Http\Controllers\Api\V1\QuestionController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1')->group(function () {
-    Route::get('/alphabet', [AlphabetController::class, 'index'])->name('api.alphabet');
-    Route::get('/questions', [QuestionController::class, 'index'])->name('api.questions');
+/** @var Router $router */
+/** @noinspection PhpUnhandledExceptionInspection */
+$router = app()->make('router');
+
+$router->group(['prefix' => 'v1', 'as' => 'api.'], function (Router $router) {
+    $router->get('alphabet', [AlphabetController::class, 'index'])->name('alphabet');
+    $router->get('questions', [QuestionController::class, 'index'])->name('questions');
 });
