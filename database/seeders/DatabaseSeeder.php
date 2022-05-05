@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Alphabet;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Seeder;
