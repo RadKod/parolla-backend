@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\API\V1;
-
+namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Response;
+use App\Http\Controllers\Controller as BaseController;
 
-
-class BaseController extends Controller
+class Controller extends BaseController
 {
     /**
-     * success response method.
+     * Returns a success json response.
      *
      * @param $result
      * @param $message
@@ -25,30 +22,27 @@ class BaseController extends Controller
             'message' => $message,
         ];
 
-        return response()->json($response, 200);
+        return response()->json($response);
     }
 
-
     /**
-     * return error response.
+     * Returns an error json response.
      *
      * @param $error
      * @param array $error_messages
      * @param int $code
      * @return JsonResponse
      */
-    public function sendError($error, array $error_messages = [], int $code = 200): JsonResponse
+    public function sendError($error, array $error_messages = [], int $code = 500): JsonResponse
     {
         $response = [
             'success' => false,
             'message' => $error,
         ];
 
-
         if (!empty($error_messages)) {
             $response['data'] = $error_messages;
         }
-
 
         return response()->json($response, $code);
     }

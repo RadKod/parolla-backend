@@ -7,48 +7,46 @@ use App\Models\Question;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
-class QuestionController extends BaseController
+class QuestionController extends Controller
 {
-
     /**
+     * Retrieve index of the questions.
+     *
      * @return JsonResponse
      */
     public function index(): JsonResponse
     {
-        $yesterday = Carbon::now()->subDay()->toDateString();
-        $today = Carbon::now()->toDateString();
+        $today = Carbon::now();
+        $yesterday = $today->copy()->subDay();
 
-        $old_cache_file_name = md5('questions_' . $yesterday);
-        $cache_file_name = md5('questions_' . $today);
+        $yesterdayCacheKey = 'questions_' . $yesterday->toDateString();
+        $todayCacheKey = 'questions_' . $today->toDateString();
 
-        if (Cache::has($cache_file_name)) {
-            $questions = Cache::get($cache_file_name);
+        if (Cache::has($todayCacheKey)) {
+            $questions = Cache::get($todayCacheKey);
         } else {
-            $not_in_ids = [];
+            $excludes = [];
 
-            if (Cache::has($old_cache_file_name)) {
-                $old_questions = Cache::get($old_cache_file_name);
-                $not_in_ids = $old_questions->pluck('id')->toArray();
+            if (Cache::has($yesterdayCacheKey)) {
+                $oldQuestions = Cache::get($yesterdayCacheKey);
+                $excludes = $oldQuestions->pluck('id')->toArray();
             }
 
-            $subFromQuery = Question::query()
-                ->select('id', 'character', 'question', 'answer')
-                ->inRandomOrder()->toSql();
             $questions = Question::query()
-                ->select('id', 'character', 'question', 'answer')
-                ->whereNotIn('id', $not_in_ids)
-                ->from(DB::raw("($subFromQuery) as sub"))
+                ->select('id', 'question', 'answer', 'character')
+                ->whereNotIn('id', $excludes)
+                ->whereIn('id', Question::query()->selectRaw('MIN(id)')->groupBy('character')->toBase())
+                ->inRandomOrder()
                 ->get();
 
-            Cache::forever($cache_file_name, $questions);
-            Cache::forget($old_cache_file_name);
+            Cache::forever($todayCacheKey, $questions);
+            Cache::forget($yesterdayCacheKey);
         }
 
         return $this->sendResponse(
             [
-                'date' => $today,
+                'date' => $today->toDateString(),
                 'questions' => QuestionResource::collection($questions),
             ],
             'Questions retrieved successfully.'
