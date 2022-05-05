@@ -5,8 +5,6 @@ namespace App\Http\Livewire\Question;
 use App\Models\Character;
 use App\Models\Question;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Query\Builder;
 use Livewire\Component;
@@ -16,166 +14,216 @@ class QuestionList extends Component
 {
     use WithPagination;
 
-    protected $paginationTheme = 'bootstrap';
+    /**
+     * Define pagination theme.
+     *
+     * @var string pagination theme name
+     */
+    protected string $paginationTheme = 'bootstrap';
 
     /**
-     * Filter Form Data
+     * @var string|null search keyword
      */
-    public $search_term;
-    public $filter_character;
-    public $confirming_delete_id;
+    public ?string $searchTerm = null;
 
     /**
-     * Update & Create Form Data
+     * @var string|null filter for specific character
      */
-    public $cr_question_id;
-    public $cr_question;
-    public $cr_character;
-    public $cr_answer;
+    public ?string $filterCharacter = null;
 
     /**
-     * @return void
+     * @var int associated question id for deleting process
      */
-    public function mount(): void
-    {
-    }
+    public int $deleteQuestionId;
+
+    // TODO: Use DTO for question store
 
     /**
-     * @return Application|Factory|View
+     * @var int|null question id for editing
      */
-    public function render()
+    public ?int $questionId = null;
+
+    /**
+     * @var string|null question text
+     */
+    public ?string $questionString = null;
+
+    /**
+     * @var string|null question character/letter
+     */
+    public ?string $questionCharacter = null;
+
+    /**
+     * @var string|null question answer
+     */
+    public ?string $questionAnswer = null;
+
+    /**
+     * Renders component
+     *
+     * @return View
+     */
+    public function render(): View
     {
         /** @var Builder $questions */
         $questions = Question::query();
 
-        if ($this->search_term) {
-            $questions = $questions->search($this->search_term);
+        if ($this->searchTerm) {
+            $questions = $questions->search($this->searchTerm);
         }
 
-        if ($this->filter_character) {
-            $questions = $questions->forCharacter($this->filter_character);
+        if ($this->filterCharacter) {
+            $questions = $questions->forCharacter($this->filterCharacter);
         }
 
-        $alphabet = Character::all();
+        $characters = Character::all();
         $questions = $questions->paginate(10);
 
-        return view('livewire.question.question-list', compact('questions', 'alphabet'));
+        return view('question.question-list', compact('questions', 'characters'));
     }
 
     /**
-     * @param int $id
+     * Store question id for continue to delete process.
+     *
+     * @param int $id question id
      * @return void
      */
-    public function confirm_delete(int $id): void
+    public function confirmDeletion(int $id): void
     {
-        $this->confirming_delete_id = $id;
+        $this->deleteQuestionId = $id;
     }
 
     /**
+     * Delete question by id.
+     *
      * @param int $id
      * @return void
      * @throws Exception
      */
     public function delete(int $id): void
     {
-        $question = Question::query()->find($id);
-        $question->delete();
+        Question::query()->find($id)->delete();
         session()->flash('message', 'Question Deleted Successfully.');
     }
 
     /**
+     * Filters list of questions by character.
+     *
      * @param string $character
      * @return void
      */
-    public function filter_by_alphabet(string $character): void
+    public function filterByCharacter(string $character): void
     {
-        $this->filter_character = $this->filter_character === $character ? '' : $character;
-        $this->cr_character = $this->cr_character === $character ? '' : $character;
+        $character = $this->filterCharacter === $character ? null : $character;
+
+        $this->filterCharacter = $character;
+        $this->questionCharacter = $character;
     }
 
     /**
+     * Resets form.
+     *
      * @return void
      */
-    public function reset_form(): void
+    public function resetForm(): void
     {
-        $this->cr_question_id = '';
-        $this->cr_question = '';
-        $this->cr_answer = '';
+        $this->questionId = null;
+        $this->questionString = null;
+        $this->questionAnswer = null;
     }
 
     /**
+     * Shows create form. Reset form if previously used.
+     *
      * @return void
+     * @noinspection PhpUnused
      */
-    public function open_create_form(): void
+    public function showCreateForm(): void
     {
-        if ($this->cr_question_id) {
-            $this->reset_form();
+        if ($this->questionId) {
+            $this->resetForm();
         }
     }
 
     /**
+     * Edit question.
+     *
      * @param int $id
      * @return void
+     * @noinspection PhpUnused
      */
-    public function edit(int $id): void
+    public function editQuestion(int $id): void
     {
         $question = Question::query()->find($id);
-        $this->cr_question_id = $question->id;
-        $this->cr_question = $question->question;
-        $this->cr_answer = $question->answer;
-        $this->cr_character = $question->character;
+
+        $this->questionId = $question->id;
+        $this->questionString = $question->question;
+        $this->questionAnswer = $question->answer;
+        $this->questionCharacter = $question->character;
     }
 
     /**
+     * Creates or update question
+     *
      * @return void
      */
-    public function create_or_update(): void
+    public function apply(): void
     {
         $this->validate([
-            'cr_question' => 'required|min:6',
-            'cr_answer' => 'required|unique:questions,answer,' . $this->cr_question_id . '|min:1',
-            'cr_character' => 'required'
+            'questionString' => 'required|min:6',
+            'questionAnswer' => 'required|unique:questions,answer,' . $this->questionId . '|min:1',
+            'questionCharacter' => 'required'
         ]);
-        if ($this->cr_question_id) {
+
+        if ($this->questionId) {
             $this->update();
         } else {
             $this->store();
         }
-        $this->close_modal();
+
+        $this->closeModal();
     }
 
     /**
+     * Update question.
+     *
      * @return void
      */
     public function update(): void
     {
-        $question = Question::query()->find($this->cr_question_id);
-        $question->question = $this->cr_question;
-        $question->answer = $this->cr_answer;
-        $question->character = $this->cr_character;
+        $question = Question::query()->find($this->questionId);
+        $question->question = $this->questionString;
+        $question->answer = $this->questionAnswer;
+        $question->character = $this->questionCharacter;
         $question->save();
+
         session()->flash('message', 'Question Updated Successfully.');
     }
 
     /**
+     * Create question.
+     *
      * @return void
      */
     public function store(): void
     {
         $question = new Question();
-        $question->question = $this->cr_question;
-        $question->answer = $this->cr_answer;
-        $question->character = $this->cr_character;
+        $question->question = $this->questionString;
+        $question->answer = $this->questionAnswer;
+        $question->character = $this->questionCharacter;
         $question->save();
+
         session()->flash('message', 'Question Created Successfully.');
     }
 
     /**
+     * Closes modal for creating/editing question.
+     *
      * @return void
      */
-    public function close_modal(): void
+    public function closeModal(): void
     {
         $this->emit('closeModal');
-        $this->reset_form();
+        $this->resetForm();
     }
 }

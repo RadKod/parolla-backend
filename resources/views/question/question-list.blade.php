@@ -16,28 +16,25 @@
         </div>
 
         <div class="col-9 float-right text-right">
-            <button type="button" class="btn btn-primary" wire:click="open_create_form"
+            <button type="button" class="btn btn-primary" wire:click="showCreateForm"
                     data-toggle="modal" data-target="#crudModal_post">
                 Create Question
             </button>
         </div>
-        @include('livewire.question.inc.modal')
+        @include('question.partials.modal')
     </div>
 
     <div class="row mt-2">
         <div class="col-2">
-            <input type="text" wire:model="search_term" class="form-control"
-                   placeholder="Search question.."
-            />
+            <input type="text" wire:model="searchTerm" class="form-control" placeholder="Search question.." />
         </div>
 
         <div class="col-12 alphabets pt-2 pb-2">
-            @foreach($alphabet as $alphabet_item)
-                <button type="button" data-toggle="tooltip" data-placement="top"
-                        title="{{ $alphabet_item->questionCount }}"
-                        wire:click.prevent="filter_by_alphabet('{{$alphabet_item->character}}')"
-                        class="btn {{$filter_character === $alphabet_item->character ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
-                    {{$alphabet_item->character}}
+            @foreach($characters as $character)
+                <button type="button" data-toggle="tooltip" data-placement="top" title="{{ $character->questionCount }}"
+                        wire:click.prevent="filterByCharacter('{{$character->character}}')"
+                        class="btn {{ $filterCharacter === $character->character ? 'btn-success' : 'btn-primary' }} btn-circle btn-sm">
+                    {{$character->character}}
                 </button>
             @endforeach
         </div>
@@ -65,15 +62,15 @@
                             <td>{{ $question->answer }}</td>
                             <td>
                                 <button data-toggle="modal" data-target="#crudModal_post"
-                                        wire:click="edit({{ $question->id }})"
+                                        wire:click="editQuestion({{ $question->id }})"
                                         class="btn btn-primary btn-sm">Edit
                                 </button>
-                                @if($confirming_delete_id && $confirming_delete_id === $question->id)
+                                @if($deleteQuestionId && $deleteQuestionId === $question->id)
                                     <button wire:click="delete({{ $question->id }})" class="btn btn-danger btn-sm">
                                         Sure?
                                     </button>
                                 @else
-                                    <button wire:click="confirm_delete({{ $question->id }})"
+                                    <button wire:click="confirmDeletion({{ $question->id }})"
                                             class="btn btn-secondary btn-sm">
                                         Delete
                                     </button>
