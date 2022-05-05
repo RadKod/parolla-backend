@@ -12,6 +12,8 @@ class AlphabetResource extends JsonResource
      *
      * @param Request $request
      * @return array
+     * @noinspection PhpArrayShapeAttributeCanBeAddedInspection
+     * @noinspection PhpUndefinedFieldInspection
      */
     public function toArray($request): array
     {
