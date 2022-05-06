@@ -12,13 +12,15 @@ class QuestionResource extends JsonResource
      *
      * @param Request $request
      * @return array
+     * @noinspection PhpArrayShapeAttributeCanBeAddedInspection
+     * @noinspection PhpUndefinedFieldInspection
      */
     public function toArray($request): array
     {
         return [
             'id' => $this->id,
             'question' => $this->question,
-            'letter' => $this->alphabet->name,
+            'letter' => $this->character,
             'answer' => $this->answer,
         ];
     }

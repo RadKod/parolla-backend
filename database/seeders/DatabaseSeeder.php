@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Alphabet;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -24,41 +23,8 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin')
         ]);
 
-        $alphabets = [
-            ['name' => 'A'],
-            ['name' => 'B'],
-            ['name' => 'C'],
-            ['name' => 'Ç'],
-            ['name' => 'D'],
-            ['name' => 'E'],
-            ['name' => 'F'],
-            ['name' => 'G'],
-            ['name' => 'H'],
-            ['name' => 'I'],
-            ['name' => 'İ'],
-            ['name' => 'J'],
-            ['name' => 'K'],
-            ['name' => 'L'],
-            ['name' => 'M'],
-            ['name' => 'N'],
-            ['name' => 'O'],
-            ['name' => 'Ö'],
-            ['name' => 'P'],
-            ['name' => 'R'],
-            ['name' => 'S'],
-            ['name' => 'Ş'],
-            ['name' => 'T'],
-            ['name' => 'U'],
-            ['name' => 'Ü'],
-            ['name' => 'V'],
-            ['name' => 'Y'],
-            ['name' => 'Z'],
-        ];
-
-        Alphabet::query()->upsert($alphabets, ['name']);
-
         Question::query()->create([
-            'alphabet_id' => 1,
+            'character' => 'A',
             'question' => 'Türkiye nin başkenti?',
             'answer' => 'Ankara'
         ]);

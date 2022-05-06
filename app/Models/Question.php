@@ -2,49 +2,60 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Alphabet;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
     use HasFactory;
-    protected $table = 'questions';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
     protected $fillable = [
-        'alphabet_id', 'question', 'answer', 'created_at', 'updated_at'
+        'character', 'question', 'answer', 'created_at', 'updated_at'
     ];
 
-    public function alphabet(): BelongsTo
+    /**
+     * Retrieve character of this question.
+     *
+     * @return BelongsTo character model
+     */
+    public function character(): BelongsTo
     {
-        return $this->belongsTo(Alphabet::class);
-    }
-
-    public function question(): BelongsTo
-    {
-        return $this->belongsTo(__CLASS__, 'id', 'id');
+        return $this->belongsTo(Character::class, 'character', 'character');
     }
 
     /**
-     * @param $query
-     * @param $search
+     * Scope query to specific search keyword.
+     *
+     * TODO: We don't need to use this simple scope.
+     *
+     * @param Builder $query
+     * @param string $search
      * @return mixed
      */
-    public function scopeSearch($query, $search)
+    public function scopeSearch(Builder $query, string $search): Builder
     {
-        return $query->where('question', 'like', '%' . $search . '%')->orWhere('answer', 'like', '%' . $search . '%');
+        return $query->where('question', 'like', '%' . $search . '%')
+            ->orWhere('answer', 'like', '%' . $search . '%');
     }
 
     /**
-     * @param $query
-     * @param $alphabet_id
+     * Scope query to specific character.
+     *
+     * TODO: We don't need to use this simple scope.
+     *
+     * @param Builder $query
+     * @param string $character
      * @return mixed
      */
-    public function scopeAlphabet($query, $alphabet_id)
+    public function scopeForCharacter(Builder $query, string $character): Builder
     {
-        if ($alphabet_id) {
-            return $query->where('alphabet_id', $alphabet_id);
-        }
+        return $query->where('character', $character);
     }
 }

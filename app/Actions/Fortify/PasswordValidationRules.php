@@ -2,8 +2,12 @@
 
 namespace App\Actions\Fortify;
 
+use JetBrains\PhpStorm\Pure;
 use Laravel\Fortify\Rules\Password;
 
+/**
+ * A trait for retrieve rules for password fields
+ */
 trait PasswordValidationRules
 {
     /**
@@ -11,7 +15,8 @@ trait PasswordValidationRules
      *
      * @return array
      */
-    protected function passwordRules()
+    #[Pure]
+    protected function passwordRules(): array
     {
         return ['required', 'string', new Password, 'confirmed'];
     }

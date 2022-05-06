@@ -4,6 +4,9 @@ namespace App\Actions\Jetstream;
 
 use Laravel\Jetstream\Contracts\DeletesUsers;
 
+/**
+ * An action for delete user and remove from store.
+ */
 class DeleteUser implements DeletesUsers
 {
     /**

@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Question;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
     /**
-     * @return Application|Factory|View
+     * Retrieve questions resource view.
+     *
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
         return view('question.index');
     }
