@@ -31,9 +31,10 @@
 
         <div class="col-12 alphabets pt-2 pb-2">
             @foreach($characters as $character)
-                <button type="button" data-toggle="tooltip" data-placement="top" title="{{ $character->questionCount }}"
-                        wire:click.prevent="filterByCharacter('{{$character->character}}')"
-                        class="btn {{ $filterCharacter === $character->character ? 'btn-success' : 'btn-primary' }} btn-circle btn-sm">
+                <button type="button" data-toggle="tooltip" data-placement="top" data-html="true"
+                        title="total questions: {{ $character->questionCount }} <br> unpublished question: {{ $character->releaseCount }} <br> published question: {{ $character->questionCount - $character->releaseCount }}"
+                        wire:click.prevent="filter_by_alphabet('{{$character->character}}')"
+                        class="btn {{$filterCharacter === $character->character ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
                     {{$character->character}}
                 </button>
             @endforeach

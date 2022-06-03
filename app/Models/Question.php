@@ -17,7 +17,11 @@ class Question extends Model
      * @var string[]
      */
     protected $fillable = [
-        'character', 'question', 'answer', 'created_at', 'updated_at'
+        'character', 'question', 'answer', 'release_at', 'created_at', 'updated_at'
+    ];
+
+    protected $dates = [
+        'release_at'
     ];
 
     /**
