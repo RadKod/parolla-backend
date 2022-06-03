@@ -50,6 +50,7 @@
                         <th>Letter</th>
                         <th>Question</th>
                         <th>Answer</th>
+                        <th>Release At</th>
                         <th style="width: 150px">Action</th>
                     </tr>
                     </thead>
@@ -60,6 +61,19 @@
                             <td>{{ $question->character }}</td>
                             <td>{{ $question->question }}</td>
                             <td>{{ $question->answer }}</td>
+                            <td>
+                                @if($question->release_at)
+                                    {{ $question->release_at->format('d-m-Y') }}
+                                    <br>
+                                    next release at
+                                    <br>
+                                    {{ $question->release_at->addDays(15)->format('d-m-Y') }}
+                                @else
+                                    <span class="text-danger"
+                                          wire:click.prevent="update_release_at_question('{{$question->id}}')"
+                                          style="cursor:pointer;">Not set</span>
+                                @endif
+                            </td>
                             <td>
                                 <button data-toggle="modal" data-target="#crudModal_post"
                                         wire:click="editQuestion({{ $question->id }})"

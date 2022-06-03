@@ -146,6 +146,20 @@ class QuestionList extends Component
     }
 
     /**
+     *  update release at date
+     *
+     * @param int $id question id
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function update_release_at_question(int $id): void
+    {
+        $question = Question::query()->find($id);
+        $question->release_at = now();
+        $question->save();
+    }
+
+    /**
      * Edit question.
      *
      * @param int $id
