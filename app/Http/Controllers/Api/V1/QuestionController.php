@@ -19,6 +19,7 @@ class QuestionController extends Controller
     {
         $today = Carbon::now();
         $yesterday = $today->copy()->subDay();
+        $days_15_ago = $today->copy()->subDays(15);
 
         $yesterdayCacheKey = 'questions_' . $yesterday->toDateString();
         $todayCacheKey = 'questions_' . $today->toDateString();
@@ -26,19 +27,28 @@ class QuestionController extends Controller
         if (Cache::has($todayCacheKey)) {
             $questions = Cache::get($todayCacheKey);
         } else {
-            $excludes = [];
+            $excludes = Question::query()
+                ->select('id')
+                ->whereBetween('release_at', [$days_15_ago, $today])
+                ->get()
+                ->pluck('id')
+                ->toArray();
 
-            if (Cache::has($yesterdayCacheKey)) {
-                $oldQuestions = Cache::get($yesterdayCacheKey);
-                $excludes = $oldQuestions->pluck('id')->toArray();
-            }
-
+            $subFromQuery = Question::query()
+                ->select('id', 'alphabet_id', 'question', 'answer')
+                ->inRandomOrder()->toSql();
             $questions = Question::query()
-                ->select('id', 'question', 'answer', 'character')
+                ->select('id', 'alphabet_id', 'question', 'answer')
                 ->whereNotIn('id', $excludes)
-                ->whereIn('id', Question::query()->selectRaw('MIN(id)')->groupBy('character')->toBase())
-                ->inRandomOrder()
+                ->from(DB::raw("($subFromQuery) as sub"))
+                ->with(['alphabet'])
+                ->groupBy('alphabet_id')
                 ->get();
+
+            // get question ids
+            $questionIds = $questions->pluck('id')->toArray();
+            // update release_at
+            Question::query()->whereIn('id', $questionIds)->update(['release_at' => $today]);
 
             Cache::forever($todayCacheKey, $questions);
             Cache::forget($yesterdayCacheKey);
