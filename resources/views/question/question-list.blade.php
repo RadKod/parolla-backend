@@ -26,14 +26,20 @@
 
     <div class="row mt-2">
         <div class="col-2">
-            <input type="text" wire:model="searchTerm" class="form-control" placeholder="Search question.." />
+            <input type="text" wire:model="search_term" class="form-control"
+                   placeholder="Search question.."
+            />
+        </div>
+        <div class="col-3">
+            <input type="checkbox" wire:model="release_at" class="form-check-input" id="asked_questions">
+            <label for="asked_questions">Questions to be asked within 15 days</label>
         </div>
 
         <div class="col-12 alphabets pt-2 pb-2">
             @foreach($characters as $character)
                 <button type="button" data-toggle="tooltip" data-placement="top" data-html="true"
                         title="total questions: {{ $character->questionCount }} <br> unpublished question: {{ $character->releaseCount }} <br> published question: {{ $character->questionCount - $character->releaseCount }}"
-                        wire:click.prevent="filter_by_alphabet('{{$character->character}}')"
+                        wire:click.prevent="filterByCharacter('{{$character->character}}')"
                         class="btn {{$filterCharacter === $character->character ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
                     {{$character->character}}
                 </button>
