@@ -65,7 +65,7 @@
                         @endif
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('clear-cache') }}">{{ __('Force Delete Cache') }}</a>
+                            <a class="nav-link" href="{{ route('utils.clear-cache') }}">{{ __('Force Delete Cache') }}</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
@@ -75,7 +75,7 @@
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item {{ request()->routeIs('profile') ? 'active' : '' }}"
-                                   href="{{ route('profile') }}">
+                                   href="{{ route('user.profile') }}">
                                     {{ __('Profile') }}
                                 </a>
                                 <div class="dropdown-divider"></div>
