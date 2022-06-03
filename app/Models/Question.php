@@ -17,7 +17,11 @@ class Question extends Model
      * @var string[]
      */
     protected $fillable = [
-        'character', 'question', 'answer', 'created_at', 'updated_at'
+        'character', 'question', 'answer', 'release_at', 'created_at', 'updated_at'
+    ];
+
+    protected $dates = [
+        'release_at'
     ];
 
     /**
@@ -57,5 +61,19 @@ class Question extends Model
     public function scopeForCharacter(Builder $query, string $character): Builder
     {
         return $query->where('character', $character);
+    }
+
+    /**
+     * Scope query to specific character.
+     * @param $query
+     * @param $release_at
+     * @return mixed
+     */
+    public function scopeRelease($query, $release_at)
+    {
+        // if than 15 day bigger than now
+        if ($release_at) {
+            return $query->where('release_at', '>', now()->addDays(15))->orWhereNull('release_at');
+        }
     }
 }

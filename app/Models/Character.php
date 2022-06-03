@@ -60,4 +60,18 @@ class Character extends Model
     {
         return Question::query()->forCharacter($this->character)->count();
     }
+
+    /**
+     * Retrieve releases count of this character.
+     *
+     * @return int total number of releases
+     * @noinspection PhpUnused
+     */
+    public function getReleaseCountAttribute(): int
+    {
+        return Question::query()->forCharacter($this->character)
+            ->where('release_at', '>', now()->addDays(15)
+            )->orWhereNull('release_at'
+            )->count();
+    }
 }

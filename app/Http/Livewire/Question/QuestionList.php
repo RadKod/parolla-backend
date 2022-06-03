@@ -59,6 +59,11 @@ class QuestionList extends Component
     public ?string $questionAnswer = null;
 
     /**
+     * @var bool|null releases at
+     */
+    public $release_at;
+
+    /**
      * Renders component
      *
      * @return View
@@ -74,6 +79,10 @@ class QuestionList extends Component
 
         if ($this->filterCharacter) {
             $questions = $questions->forCharacter($this->filterCharacter);
+        }
+
+        if ($this->release_at) {
+            $questions = $questions->release($this->release_at);
         }
 
         $characters = Character::all();
@@ -143,6 +152,20 @@ class QuestionList extends Component
         if ($this->questionId) {
             $this->resetForm();
         }
+    }
+
+    /**
+     *  update release at date
+     *
+     * @param int $id question id
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function update_release_at_question(int $id): void
+    {
+        $question = Question::query()->find($id);
+        $question->release_at = now();
+        $question->save();
     }
 
     /**
