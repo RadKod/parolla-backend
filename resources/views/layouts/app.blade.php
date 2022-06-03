@@ -65,7 +65,7 @@
                         @endif
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('utils.clear-cache') }}">{{ __('Force Delete Cache') }}</a>
+                            <a class="nav-link" href="{{ route('utils.clear-cache') }}">{{ __("Delete today's questions") }}</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
