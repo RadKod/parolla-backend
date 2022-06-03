@@ -1,5 +1,9 @@
 # Parolla - Backend
 
+Preview
+-
+![parolla](public/assets/preview.png)
+
 Install
 -
 * .env.example copy -> .env
