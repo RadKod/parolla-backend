@@ -59,6 +59,11 @@ class QuestionList extends Component
     public ?string $questionAnswer = null;
 
     /**
+     * @var bool|null releases at
+     */
+    public $release_at;
+
+    /**
      * Renders component
      *
      * @return View
@@ -74,6 +79,10 @@ class QuestionList extends Component
 
         if ($this->filterCharacter) {
             $questions = $questions->forCharacter($this->filterCharacter);
+        }
+
+        if ($this->release_at) {
+            $questions = $questions->release($this->release_at);
         }
 
         $characters = Character::all();

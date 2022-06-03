@@ -62,4 +62,18 @@ class Question extends Model
     {
         return $query->where('character', $character);
     }
+
+    /**
+     * Scope query to specific character.
+     * @param $query
+     * @param $release_at
+     * @return mixed
+     */
+    public function scopeRelease($query, $release_at)
+    {
+        // if than 15 day bigger than now
+        if ($release_at) {
+            return $query->where('release_at', '>', now()->addDays(15))->orWhereNull('release_at');
+        }
+    }
 }
