@@ -19,6 +19,7 @@ return new class extends Migration
             $table->char('character');
             $table->string('question');
             $table->string('answer');
+            $table->timestamp('release_at')->nullable();
 
             $table->timestamps();
         });
