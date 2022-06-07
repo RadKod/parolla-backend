@@ -69,8 +69,9 @@ class Character extends Model
      */
     public function getReleaseCountAttribute(): int
     {
+        $date = now()->subDays(15)->toDateString();
         return Question::query()->forCharacter($this->character)
-            ->where('release_at', '>', now()->addDays(15)
+            ->where('release_at', '<=', $date
             )->orWhereNull('release_at'
             )->count();
     }

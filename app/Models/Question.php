@@ -73,7 +73,8 @@ class Question extends Model
     {
         // if than 15 day bigger than now
         if ($release_at) {
-            return $query->where('release_at', '>', now()->addDays(15))->orWhereNull('release_at');
+            $date = now()->subDays(15)->toDateString();
+            return $query->where('release_at', '<=', $date)->orWhereNull('release_at');
         }
     }
 }
