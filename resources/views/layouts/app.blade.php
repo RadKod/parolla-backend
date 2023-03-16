@@ -46,6 +46,12 @@
                             {{ __('Questions') }}
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('calendar') ? 'active' : '' }}"
+                           href="{{ route('calendar') }}">
+                            {{ __('Calendar') }}
+                        </a>
+                    </li>
                 </ul>
 
                 <!-- Right Side Of Navbar -->
@@ -64,9 +70,9 @@
                             </li>
                         @endif
                     @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('clear-cache') }}">{{ __('Force Delete Cache') }}</a>
-                        </li>
+{{--                        <li class="nav-item">--}}
+{{--                            <a class="nav-link" href="{{ route('clear-cache') }}">{{ __('force delete cache') }}</a>--}}
+{{--                        </li>--}}
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

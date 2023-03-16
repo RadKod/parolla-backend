@@ -18,6 +18,7 @@ class CreateQuestionsTable extends Migration
             $table->unsignedBigInteger('alphabet_id');
             $table->string('question');
             $table->string('answer');
+            $table->timestamp('release_at')->nullable();
             $table->timestamps();
 
             // foreign keys

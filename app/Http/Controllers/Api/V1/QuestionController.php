@@ -17,35 +17,51 @@ class QuestionController extends BaseController
      */
     public function index(): JsonResponse
     {
-        $yesterday = Carbon::now()->subDay()->toDateString();
-        $today = Carbon::now()->toDateString();
+        $today = Carbon::now();
+        $yesterday = $today->copy()->subDay();
+        $days_15_ago = $today->copy()->subDays(15);
 
-        $old_cache_file_name = md5('questions_' . $yesterday);
-        $cache_file_name = md5('questions_' . $today);
+        $yesterdayCacheKey = 'questions_' . $yesterday->toDateString();
+        $todayCacheKey = 'questions_' . $today->toDateString();
 
-        if (Cache::has($cache_file_name)) {
-            $questions = Cache::get($cache_file_name);
+        if (Cache::has($todayCacheKey)) {
+            $questions = Cache::get($todayCacheKey);
         } else {
-            $not_in_ids = [];
-
-            if (Cache::has($old_cache_file_name)) {
-                $old_questions = Cache::get($old_cache_file_name);
-                $not_in_ids = $old_questions->pluck('id')->toArray();
-            }
+            $excludes = Question::query()
+                ->select('id')
+                ->whereBetween('release_at', [$days_15_ago, $today])
+                ->get()
+                ->pluck('id')
+                ->toArray();
 
             $subFromQuery = Question::query()
                 ->select('id', 'alphabet_id', 'question', 'answer')
                 ->inRandomOrder()->toSql();
             $questions = Question::query()
                 ->select('id', 'alphabet_id', 'question', 'answer')
-                ->whereNotIn('id', $not_in_ids)
+                ->whereNotIn('id', $excludes)
                 ->from(DB::raw("($subFromQuery) as sub"))
                 ->with(['alphabet'])
                 ->groupBy('alphabet_id')
                 ->get();
 
-            Cache::forever($cache_file_name, $questions);
-            Cache::forget($old_cache_file_name);
+            // get question ids
+            $questionIds = $questions->pluck('id')->toArray();
+            // update release_at
+            Question::query()->whereIn('id', $questionIds)->update(['release_at' => $today]);
+
+//            $questions = Question::query()
+//                ->select('id', 'alphabet_id', 'question', 'answer')
+//                ->whereNotIn('id', $excludes)
+//                ->whereIn('id', Question::query()
+//                    ->selectRaw('MIN(id)')->groupBy('alphabet_id')->toBase())
+//                ->inRandomOrder()
+//                ->orderBy('alphabet_id')
+//                ->get();
+
+            Cache::forever($todayCacheKey, $questions);
+            Cache::forget($yesterdayCacheKey);
+            Cache::flush();
         }
 
         return $this->sendResponse(

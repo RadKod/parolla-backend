@@ -20,6 +20,7 @@ class QuestionList extends Component
     /**
      * Filter Form Data
      */
+    public $release_at;
     public $search_term;
     public $filter_alphabet_id;
     public $confirming_delete_id;
@@ -44,13 +45,19 @@ class QuestionList extends Component
      */
     public function render()
     {
-        $alphabet = Alphabet::query()->with('questions')->get();
+        $alphabet = Alphabet::query()
+            ->with(['questions', 'releasesQuestions'])
+            ->get();
+
         $questions = Question::query()
             ->with('alphabet')
             ->search($this->search_term)
             ->alphabet($this->filter_alphabet_id)
+            ->release($this->release_at)
             ->paginate(10);
-        return view('livewire.question.question-list', compact('questions', 'alphabet'));
+        return view('livewire.question.question-list', compact(
+            'questions', 'alphabet'
+        ));
     }
 
     /**
@@ -82,6 +89,16 @@ class QuestionList extends Component
     {
         $this->filter_alphabet_id = $this->filter_alphabet_id === $id ? '' : $id;
         $this->cr_alphabet_id = $this->cr_alphabet_id === $id ? '' : $id;
+    }
+
+    /**
+     * @return void
+     */
+    public function update_release_at_question($question_id): void
+    {
+        $question = Question::query()->find($question_id);
+        $question->release_at = now();
+        $question->save();
     }
 
     /**

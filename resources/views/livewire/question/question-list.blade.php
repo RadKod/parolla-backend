@@ -30,11 +30,15 @@
                    placeholder="Search question.."
             />
         </div>
+        <div class="col-3">
+            <input type="checkbox" wire:model="release_at" class="form-check-input" id="asked_questions">
+            <label for="asked_questions">Questions to be asked within 15 days</label>
+        </div>
 
         <div class="col-12 alphabets pt-2 pb-2">
             @foreach($alphabet as $alphabet_item)
-                <button type="button" data-toggle="tooltip" data-placement="top"
-                        title="{{ $alphabet_item->questions->count() }}"
+                <button type="button" data-toggle="tooltip" data-placement="top" data-html="true"
+                        title="total questions: {{ $alphabet_item->questions->count() }} <br> unpublished question: {{ $alphabet_item->releasesQuestions->count() }} <br> published question: {{ $alphabet_item->questions->count() - $alphabet_item->releasesQuestions->count() }}"
                         wire:click.prevent="filter_by_alphabet('{{$alphabet_item->id}}')"
                         class="btn {{$filter_alphabet_id === $alphabet_item->id ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
                     {{$alphabet_item->name}}
@@ -53,6 +57,7 @@
                         <th>Letter</th>
                         <th>Question</th>
                         <th>Answer</th>
+                        <th>Release At</th>
                         <th style="width: 150px">Action</th>
                     </tr>
                     </thead>
@@ -63,6 +68,19 @@
                             <td>{{ $question->alphabet->name }}</td>
                             <td>{{ $question->question }}</td>
                             <td>{{ $question->answer }}</td>
+                            <td>
+                                @if($question->release_at)
+                                    {{ $question->release_at->format('d-m-Y') }}
+                                    <br>
+                                    next release at
+                                    <br>
+                                    {{ $question->release_at->addDays(15)->format('d-m-Y') }}
+                                @else
+                                    <span class="text-danger"
+                                          wire:click.prevent="update_release_at_question('{{$question->id}}')"
+                                          style="cursor:pointer;">Not set</span>
+                                @endif
+                            </td>
                             <td>
                                 <button data-toggle="modal" data-target="#crudModal_post"
                                         wire:click="edit({{ $question->id }})"

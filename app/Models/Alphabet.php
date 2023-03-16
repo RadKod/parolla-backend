@@ -11,11 +11,20 @@ class Alphabet extends Model
     use HasFactory;
     protected $table = 'alphabet';
     protected $fillable = [
-        'name', 'created_at', 'updated_at'
+        'name', 'release_at', 'created_at', 'updated_at'
+    ];
+    protected $dates = [
+        'release_at'
     ];
 
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);
+    }
+
+    public function releasesQuestions(): HasMany
+    {
+        $date = now()->subDays(15)->toDateString();
+        return $this->hasMany(Question::class)->where('release_at', '<=', $date)->orWhereNull('release_at');
     }
 }
