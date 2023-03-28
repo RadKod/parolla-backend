@@ -18,4 +18,5 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::get('/alphabet', [AlphabetController::class, 'index'])->name('api.alphabet');
     Route::get('/questions', [QuestionController::class, 'index'])->name('api.questions');
+    Route::get('/modes/unlimited', [QuestionController::class, 'unlimited'])->name('api.modes.unlimited');
 });

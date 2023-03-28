@@ -37,7 +37,10 @@ class Question extends Model
      */
     public function scopeSearch($query, $search)
     {
-        return $query->where('question', 'like', '%' . $search . '%')->orWhere('answer', 'like', '%' . $search . '%');
+        $query->where(function ($query) use ($search) {
+            $query->where('question', 'like', '%' . $search . '%')
+                ->orWhere('answer', 'like', '%' . $search . '%');
+        });
     }
 
     /**
@@ -48,7 +51,9 @@ class Question extends Model
     public function scopeAlphabet($query, $alphabet_id)
     {
         if ($alphabet_id) {
-            return $query->where('alphabet_id', $alphabet_id);
+            $query->where(function ($query) use ($alphabet_id) {
+                $query->where('alphabet_id', $alphabet_id);
+            });
         }
     }
 
@@ -62,7 +67,23 @@ class Question extends Model
         // if than 15 day bigger than now
         if ($release_at) {
             $date = now()->subDays(15)->toDateString();
-            return $query->where('release_at', '<=', $date)->orWhereNull('release_at');
+            $query->where(function ($query) use ($date) {
+                $query->where('release_at', '<=', $date)->orWhereNull('release_at');
+            });
+        }
+    }
+
+    public function scopeNotMatched($query, $not_matched_filter_for_letter_answer)
+    {
+        if ($not_matched_filter_for_letter_answer) {
+            # this->alphabet->name != first letter of this->answer
+            $query->where(function ($query) {
+                $query->whereHas('alphabet', function ($query) {
+                    # str turkish char problem
+                    $query->whereRaw('LOWER(LEFT(answer, 1)) != LOWER(LEFT(name, 1))');
+//                    whereRaw('LOWER(LEFT(answer, 1)) != LOWER(name)');
+                });
+            });
         }
     }
 }

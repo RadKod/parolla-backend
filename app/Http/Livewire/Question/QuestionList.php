@@ -21,6 +21,7 @@ class QuestionList extends Component
      * Filter Form Data
      */
     public $release_at;
+    public $not_matched_filter_for_letter_answer;
     public $search_term;
     public $filter_alphabet_id;
     public $confirming_delete_id;
@@ -54,6 +55,7 @@ class QuestionList extends Component
             ->search($this->search_term)
             ->alphabet($this->filter_alphabet_id)
             ->release($this->release_at)
+            ->notMatched($this->not_matched_filter_for_letter_answer)
             ->paginate(10);
         return view('livewire.question.question-list', compact(
             'questions', 'alphabet'

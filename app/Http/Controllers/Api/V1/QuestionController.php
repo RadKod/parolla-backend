@@ -77,4 +77,24 @@ class QuestionController extends BaseController
             'Questions retrieved successfully.'
         );
     }
+
+    public function unlimited(): JsonResponse
+    {
+        $subFromQuery = Question::query()
+            ->select('id', 'alphabet_id', 'question', 'answer')
+            ->inRandomOrder()->toSql();
+        $questions = Question::query()
+            ->select('id', 'alphabet_id', 'question', 'answer')
+            ->from(DB::raw("($subFromQuery) as sub"))
+            ->with(['alphabet'])
+            ->groupBy('alphabet_id')
+            ->get();
+
+        return $this->sendResponse(
+            [
+                'questions' => QuestionResource::collection($questions),
+            ],
+            'Questions retrieved successfully.'
+        );
+    }
 }

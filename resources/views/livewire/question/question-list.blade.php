@@ -34,6 +34,10 @@
             <input type="checkbox" wire:model="release_at" class="form-check-input" id="asked_questions">
             <label for="asked_questions">Questions to be asked within 15 days</label>
         </div>
+        <div class="col-3">
+            <input type="checkbox" wire:model="not_matched_filter_for_letter_answer" class="form-check-input" id="not_matched_filter_for_letter_answer">
+            <label for="not_matched_filter_for_letter_answer">Not matched filter for letter & answer</label>
+        </div>
 
         <div class="col-12 alphabets pt-2 pb-2">
             @foreach($alphabet as $alphabet_item)
