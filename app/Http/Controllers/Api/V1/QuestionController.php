@@ -25,7 +25,12 @@ class QuestionController extends BaseController
         $todayCacheKey = 'questions_' . $today->toDateString();
 
         if (Cache::has($todayCacheKey)) {
-            $questions = Cache::get($todayCacheKey);
+            $questionIds = Cache::get($todayCacheKey);
+            $questions = Question::query()
+                ->select('id', 'alphabet_id', 'question', 'answer')
+                ->whereIn('id', $questionIds)
+                ->with(['alphabet'])
+                ->get();
         } else {
             $excludes = Question::query()
                 ->select('id')
@@ -59,9 +64,9 @@ class QuestionController extends BaseController
 //                ->orderBy('alphabet_id')
 //                ->get();
 
-            Cache::forever($todayCacheKey, $questions);
             Cache::forget($yesterdayCacheKey);
             Cache::flush();
+            Cache::forever($todayCacheKey, $questionIds);
         }
 
         return $this->sendResponse(

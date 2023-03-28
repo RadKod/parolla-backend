@@ -47,9 +47,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('calendar') ? 'active' : '' }}"
-                           href="{{ route('calendar') }}">
-                            {{ __('Calendar') }}
+                        <a class="nav-link {{ request()->routeIs('clear-cache') ? 'active' : '' }}"
+                           href="{{ route('clear-cache') }}">
+                            {{ __('Cache Clear') }}
                         </a>
                     </li>
                 </ul>
