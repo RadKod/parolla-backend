@@ -9,6 +9,9 @@
                                 data-toggle="modal" data-target="#showDetail">
                             Show Detail
                         </button>
+                        <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}" target="_blank">
+                            api link
+                        </a>
                     </div>
                 </div>
             </div>
