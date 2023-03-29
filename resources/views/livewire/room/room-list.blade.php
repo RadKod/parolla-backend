@@ -4,14 +4,15 @@
             <div class="col-sm-6">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ $customQuestion->room }}</h5>
+                        <h5 class="card-title">
+                            <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}" target="_blank">
+                                {{ $customQuestion->room }}
+                            </a>
+                        </h5>
                         <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
                                 data-toggle="modal" data-target="#showDetail">
                             Show Detail
                         </button>
-                        <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}" target="_blank">
-                            api link
-                        </a>
                     </div>
                 </div>
             </div>
