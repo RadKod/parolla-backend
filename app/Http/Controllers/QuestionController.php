@@ -17,4 +17,9 @@ class QuestionController extends Controller
     {
         return view('question.index');
     }
+
+    public function rooms()
+    {
+        return view('room.index');
+    }
 }
