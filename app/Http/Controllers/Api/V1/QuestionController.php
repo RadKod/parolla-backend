@@ -34,6 +34,7 @@ class QuestionController extends BaseController
                 ->select('id', 'alphabet_id', 'question', 'answer')
                 ->whereIn('id', $questionIds)
                 ->with(['alphabet'])
+                ->orderBy('alphabet_id')
                 ->get();
         } else {
             $excludes = Question::query()
@@ -92,6 +93,7 @@ class QuestionController extends BaseController
             ->from(DB::raw("($subFromQuery) as sub"))
             ->with(['alphabet'])
             ->groupBy('alphabet_id')
+            ->orderBy('alphabet_id')
             ->get();
 
         return $this->sendResponse(
@@ -167,6 +169,7 @@ class QuestionController extends BaseController
         $questions = CustomQuestion::query()
             ->select('id', 'alphabet', 'question', 'answer')
             ->where('room', $room)
+            ->orderBy('alphabet')
             ->get();
 
         return $this->sendResponse(
