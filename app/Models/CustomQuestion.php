@@ -12,4 +12,7 @@ class CustomQuestion extends Model
     protected $fillable = [
         'alphabet', 'question', 'answer', 'created_at', 'updated_at', 'room', 'title', 'is_public'
     ];
+    protected $casts = [
+        'is_public' => 'boolean',
+    ];
 }
