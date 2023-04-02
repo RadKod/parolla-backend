@@ -179,10 +179,16 @@ class QuestionController extends BaseController
             ->orderBy('alphabet')
             ->get();
 
+        $alphabet = [];
+        foreach ($questions as $question) {
+            $alphabet[] = $question->alphabet;
+        }
+
         return $this->sendResponse(
             [
                 'title' => $questions[0]->title,
                 'is_public' => $questions[0]->is_public,
+                'alphabet' => $alphabet,
                 'questions' => CustomQuestionResource::collection($questions),
             ],
             'Questions retrieved successfully.'
