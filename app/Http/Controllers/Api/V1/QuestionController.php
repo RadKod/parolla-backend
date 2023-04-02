@@ -108,13 +108,13 @@ class QuestionController extends BaseController
     public function custom_store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'room_title' => 'required|string',
+            'room_title' => 'required|string|max:64',
             'is_public' => 'required|boolean',
             'qa_list' => 'required|array',
             'qa_list.*' => 'required|array',
-            'qa_list.*.character' => 'required|string',
-            'qa_list.*.question' => 'required|string',
-            'qa_list.*.answer' => 'required|string',
+            'qa_list.*.character' => 'required|string|size:1',
+            'qa_list.*.question' => 'required|string|max:120',
+            'qa_list.*.answer' => 'required|string|max:120',
         ]);
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors()->all());
@@ -125,8 +125,11 @@ class QuestionController extends BaseController
         $letter_errors = [];
         foreach ($qa_list as $qa) {
             $answer_letter = mb_strtolower(mb_substr($qa['answer'][0], 0, 1));
-            if ($qa['character'] !== $answer_letter) {
-                $letter_errors[] = '\''.$qa['question'][0].'\' sorusunun cevabı \''.$qa['character'].'\' ile başlamalıdır.';
+            $answer_letters = explode(',', $answer_letter);
+            foreach ($answer_letters as $answer_letter) {
+                if ($qa['character'] !== $answer_letter) {
+                    $letter_errors[] = '\''.$qa['question'][0].'\' sorusunun cevabı \''.$qa['character'].'\' ile başlamalıdır.';
+                }
             }
         }
 
