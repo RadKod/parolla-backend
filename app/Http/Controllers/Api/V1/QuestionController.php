@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Resources\CustomQuestionResource;
+use App\Http\Resources\CustomQuestionRoomResource;
 use App\Http\Resources\QuestionResource;
 use App\Models\CustomQuestion;
 use App\Models\Question;
@@ -185,6 +186,23 @@ class QuestionController extends BaseController
                 'questions' => CustomQuestionResource::collection($questions),
             ],
             'Questions retrieved successfully.'
+        );
+    }
+
+    public function rooms(): JsonResponse
+    {
+        $rooms = CustomQuestion::query()
+            ->select('room', 'title', 'is_public')
+            ->groupBy('room')
+            ->orderBy('id', 'desc')
+            ->where('is_public', true)
+            ->get();
+
+        return $this->sendResponse(
+            [
+                'rooms' => CustomQuestionRoomResource::collection($rooms),
+            ],
+            'Rooms retrieved successfully.'
         );
     }
 }

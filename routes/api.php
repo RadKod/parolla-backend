@@ -21,4 +21,5 @@ Route::prefix('v1')->group(function () {
     Route::get('/modes/unlimited', [QuestionController::class, 'unlimited'])->name('api.modes.unlimited');
     Route::post('/modes/custom', [QuestionController::class, 'custom_store'])->name('api.modes.custom_store');
     Route::get('/modes/custom', [QuestionController::class, 'custom_get'])->name('api.modes.custom_get');
+    Route::get('/rooms', [QuestionController::class, 'rooms'])->name('api.rooms');
 });
