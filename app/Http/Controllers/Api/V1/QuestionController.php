@@ -152,7 +152,8 @@ class QuestionController extends BaseController
 
         return $this->sendResponse(
             [
-                'room' => $room,
+                'title' => $title,
+                'room' => $room
             ],
             'Questions created successfully.'
         );
