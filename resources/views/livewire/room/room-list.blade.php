@@ -6,7 +6,7 @@
                     <div class="card-body">
                         <h5 class="card-title">
                             <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}" target="_blank">
-                                {{ $customQuestion->room }}
+                                {{ $customQuestion->title }} {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
                             </a>
                         </h5>
                         <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"

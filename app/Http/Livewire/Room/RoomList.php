@@ -14,6 +14,7 @@ class RoomList extends Component
         // CustomQuestion group by room
         $customQuestions = CustomQuestion::query()
             ->groupBy('room')
+            ->orderBy('updated_at', 'desc')
             ->get();
         return view('livewire.room.room-list', compact('customQuestions'));
     }
