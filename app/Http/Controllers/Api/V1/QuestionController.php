@@ -107,6 +107,8 @@ class QuestionController extends BaseController
     public function custom_store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'is_public' => 'required|boolean',
             'questions' => 'required|array',
             'questions.*' => 'required|array',
             'questions.*.*' => 'required|string',
@@ -136,10 +138,14 @@ class QuestionController extends BaseController
 
         // crate room hash
         $room = md5(uniqid(mt_rand(), true));
+        $title = $request->get('title');
+        $is_public = $request->get('is_public');
 
         foreach ($questions as $key => $question) {
             $answer = $answers[$key];
             $create_question = new CustomQuestion();
+            $create_question->title = $title;
+            $create_question->is_public = $is_public;
             $create_question->room = $room;
             $create_question->alphabet = $key;
             $create_question->question = $question[0];

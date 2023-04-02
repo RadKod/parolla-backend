@@ -10,6 +10,6 @@ class CustomQuestion extends Model
     use HasFactory;
     protected $table = 'custom_questions';
     protected $fillable = [
-        'alphabet', 'question', 'answer', 'created_at', 'updated_at', 'room'
+        'alphabet', 'question', 'answer', 'created_at', 'updated_at', 'room', 'title', 'is_public'
     ];
 }
