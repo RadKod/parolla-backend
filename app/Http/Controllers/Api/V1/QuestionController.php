@@ -108,28 +108,25 @@ class QuestionController extends BaseController
     public function custom_store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string',
+            'room_title' => 'required|string',
             'is_public' => 'required|boolean',
-            'questions' => 'required|array',
-            'questions.*' => 'required|array',
-            'questions.*.*' => 'required|string',
-            'answers' => 'required|array',
-            'answers.*' => 'required|array',
-            'answers.*.*' => 'required|string',
+            'qa_list' => 'required|array',
+            'qa_list.*' => 'required|array',
+            'qa_list.*.character' => 'required|string',
+            'qa_list.*.question' => 'required|string',
+            'qa_list.*.answer' => 'required|string',
         ]);
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors()->all());
         }
 
-        $questions = $request->get('questions');
-        $answers = $request->get('answers');
+        $qa_list = $request->get('qa_list');
 
         $letter_errors = [];
-        foreach ($questions as $key => $question) {
-            $answer = $answers[$key];
-            $answer_letter = mb_strtolower(mb_substr($answer[0], 0, 1));
-            if ($key !== $answer_letter) {
-                $letter_errors[] = '\''.$question[0].'\' sorusunun cevabı \''.$key.'\' ile başlamalıdır.';
+        foreach ($qa_list as $qa) {
+            $answer_letter = mb_strtolower(mb_substr($qa['answer'][0], 0, 1));
+            if ($qa['character'] !== $answer_letter) {
+                $letter_errors[] = '\''.$qa['question'][0].'\' sorusunun cevabı \''.$qa['character'].'\' ile başlamalıdır.';
             }
         }
 
@@ -139,18 +136,17 @@ class QuestionController extends BaseController
 
         // crate room hash
         $room = md5(uniqid(mt_rand(), true));
-        $title = $request->get('title');
+        $title = $request->get('room_title');
         $is_public = $request->get('is_public');
 
-        foreach ($questions as $key => $question) {
-            $answer = $answers[$key];
+        foreach ($qa_list as $qa) {
             $create_question = new CustomQuestion();
             $create_question->title = $title;
             $create_question->is_public = $is_public;
             $create_question->room = $room;
-            $create_question->alphabet = $key;
-            $create_question->question = $question[0];
-            $create_question->answer = $answer[0];
+            $create_question->alphabet = $qa['character'];
+            $create_question->question = $qa['question'];
+            $create_question->answer = $qa['answer'];
             $create_question->save();
         }
 
