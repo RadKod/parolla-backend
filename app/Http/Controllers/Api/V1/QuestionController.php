@@ -173,13 +173,15 @@ class QuestionController extends BaseController
         $room = $request->get('room');
 
         $questions = CustomQuestion::query()
-            ->select('id', 'alphabet', 'question', 'answer')
+            ->select('id', 'alphabet', 'question', 'answer', 'title', 'is_public')
             ->where('room', $room)
             ->orderBy('alphabet')
             ->get();
 
         return $this->sendResponse(
             [
+                'title' => $questions[0]->title,
+                'is_public' => $questions[0]->is_public,
                 'questions' => CustomQuestionResource::collection($questions),
             ],
             'Questions retrieved successfully.'
