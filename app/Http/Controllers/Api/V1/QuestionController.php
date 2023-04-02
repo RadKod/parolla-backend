@@ -124,11 +124,11 @@ class QuestionController extends BaseController
 
         $letter_errors = [];
         foreach ($qa_list as $qa) {
-            $answer_letter = mb_strtolower(mb_substr($qa['answer'][0], 0, 1));
-            $answer_letters = explode(',', $answer_letter);
+            $answer_letters = explode(',', $qa['answer']);
             foreach ($answer_letters as $answer_letter) {
-                if ($qa['character'] !== $answer_letter) {
-                    $letter_errors[] = '\''.$qa['question'][0].'\' sorusunun cevabı \''.$qa['character'].'\' ile başlamalıdır.';
+                $answer_letter = mb_strtolower(mb_substr(trim($answer_letter), 0, 1));
+                if ($answer_letter !== $qa['character']) {
+                    $letter_errors[] = '\''.$qa['question'][0].'\' sorusunu cevabı \''.$qa['character'].'\' ile başlamalı.';
                 }
             }
         }
