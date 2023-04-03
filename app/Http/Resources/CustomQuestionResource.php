@@ -16,10 +16,9 @@ class CustomQuestionResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->id,
-            'question' => $this->question,
-            'letter' => $this->alphabet,
-            'answer' => $this->answer,
+            'question' => $this->resource['question'],
+            'letter' => $this->resource['character'],
+            'answer' => $this->resource['answer'],
         ];
     }
 }

@@ -142,16 +142,12 @@ class QuestionController extends BaseController
         $title = $request->get('room_title');
         $is_public = $request->get('is_public');
 
-        foreach ($qa_list as $qa) {
-            $create_question = new CustomQuestion();
-            $create_question->title = $title;
-            $create_question->is_public = $is_public;
-            $create_question->room = $room;
-            $create_question->alphabet = $qa['character'];
-            $create_question->question = $qa['question'];
-            $create_question->answer = $qa['answer'];
-            $create_question->save();
-        }
+        $create_question = new CustomQuestion();
+        $create_question->title = $title;
+        $create_question->is_public = $is_public;
+        $create_question->room = $room;
+        $create_question->qa_list = $qa_list;
+        $create_question->save();
 
         return $this->sendResponse(
             [
@@ -173,23 +169,27 @@ class QuestionController extends BaseController
 
         $room = $request->get('room');
 
-        $questions = CustomQuestion::query()
-            ->select('id', 'alphabet', 'question', 'answer', 'title', 'is_public')
+        $question = CustomQuestion::query()
+            ->select('id', 'qa_list', 'title', 'is_public')
             ->where('room', $room)
             ->orderBy('alphabet')
-            ->get();
+            ->first();
+
+        if (!$question) {
+            return $this->sendError('Validation Error.', ['Oda bulunamadı.']);
+        }
 
         $alphabet = [];
-        foreach ($questions as $question) {
-            $alphabet[] = $question->alphabet;
+        foreach ($question->qa_list as $qa) {
+            $alphabet[] = $qa['character'];
         }
 
         return $this->sendResponse(
             [
-                'title' => $questions[0]->title,
-                'is_public' => $questions[0]->is_public,
+                'title' => $question->title,
+                'is_public' => $question->is_public,
                 'alphabet' => $alphabet,
-                'questions' => CustomQuestionResource::collection($questions),
+                'questions' => CustomQuestionResource::collection($question->qa_list),
             ],
             'Questions retrieved successfully.'
         );

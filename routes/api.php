@@ -19,7 +19,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/alphabet', [AlphabetController::class, 'index'])->name('api.alphabet');
     Route::get('/questions', [QuestionController::class, 'index'])->name('api.questions');
     Route::get('/modes/unlimited', [QuestionController::class, 'unlimited'])->name('api.modes.unlimited');
-    Route::post('/modes/custom', [QuestionController::class, 'custom_store'])->name('api.modes.custom_store');
+    Route::post('/modes/custom', [QuestionController::class, 'custom_store'])
+        ->name('api.modes.custom_store')->middleware(['throttle:5,1']);
     Route::get('/modes/custom', [QuestionController::class, 'custom_get'])->name('api.modes.custom_get');
     Route::get('/rooms', [QuestionController::class, 'rooms'])->name('api.rooms');
 });

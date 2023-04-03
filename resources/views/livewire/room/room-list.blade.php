@@ -8,6 +8,10 @@
                             <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}" target="_blank">
                                 {{ $customQuestion->title }} {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
                             </a>
+                            <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
+                                    onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
+                                Delete
+                            </button>
                         </h5>
                         <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
                                 data-toggle="modal" data-target="#showDetail">
@@ -24,20 +28,22 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"
-                        id="exampleModalLabel">{{ $selectedRoom ? $selectedRoom->first()->room : '' }}</h5>
+                        id="exampleModalLabel">{{ $selectedRoom ? $selectedRoom->room : '' }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
+                    @if($selectedRoom)
                     <ul>
-                        @foreach($selectedRoom as $selectRoomItem)
+                        @foreach($selectedRoom->qa_list as $qa_item)
                             <li>
-                                ({{$selectRoomItem->alphabet}}) {{ $selectRoomItem->question }}
-                                <br> {{ $selectRoomItem->answer }}
+                                ({{$qa_item['character']}}) {{ $qa_item['question'] }}
+                                <br> {{ $qa_item['answer'] }}
                             </li>
                         @endforeach
                     </ul>
+                    @endif
                 </div>
                 <div class="modal-footer">
                     <button type="button" wire:click.prevent="closeRoom()" class="btn btn-secondary"

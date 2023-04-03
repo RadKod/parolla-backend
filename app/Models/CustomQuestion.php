@@ -10,9 +10,10 @@ class CustomQuestion extends Model
     use HasFactory;
     protected $table = 'custom_questions';
     protected $fillable = [
-        'alphabet', 'question', 'answer', 'created_at', 'updated_at', 'room', 'title', 'is_public'
+        'created_at', 'updated_at', 'room', 'title', 'is_public', 'qa_list'
     ];
     protected $casts = [
         'is_public' => 'boolean',
+        'qa_list' => 'array'
     ];
 }

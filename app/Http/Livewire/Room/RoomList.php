@@ -23,11 +23,19 @@ class RoomList extends Component
     {
         $this->selectedRoom = CustomQuestion::query()
             ->where('room', $room)
-            ->get();
+            ->first();
     }
 
     public function closeRoom()
     {
+        $this->selectedRoom = [];
+    }
+
+    public function deleteRoom($room)
+    {
+        CustomQuestion::query()
+            ->where('room', $room)
+            ->delete();
         $this->selectedRoom = [];
     }
 }

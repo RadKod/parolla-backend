@@ -16,9 +16,7 @@ class CreateCustomQuestionsTable extends Migration
         Schema::create('custom_questions', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('alphabet');
-            $table->string('question');
-            $table->string('answer');
+            $table->json('qa_list');
             $table->string('room');
             $table->boolean('is_public')->default(false);
             $table->timestamps();
