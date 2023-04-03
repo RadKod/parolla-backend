@@ -5,18 +5,23 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}" target="_blank">
-                                {{ $customQuestion->title }} {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
-                            </a>
                             <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
                                     onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
                                 Delete
                             </button>
+                            {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
+                            <a href="https://www.parolla.app/room/id={{$customQuestion->room}}" target="_blank">
+                                {{ $customQuestion->title }}
+                            </a>
                         </h5>
                         <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
                                 data-toggle="modal" data-target="#showDetail">
                             Show Detail
                         </button>
+                        <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}"
+                           target="_blank" class="btn btn-primary">
+                            API URL
+                        </a>
                     </div>
                 </div>
             </div>

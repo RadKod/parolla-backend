@@ -172,7 +172,6 @@ class QuestionController extends BaseController
         $question = CustomQuestion::query()
             ->select('id', 'qa_list', 'title', 'is_public')
             ->where('room', $room)
-            ->orderBy('alphabet')
             ->first();
 
         if (!$question) {
