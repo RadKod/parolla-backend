@@ -200,7 +200,7 @@ class QuestionController extends BaseController
     public function rooms(): JsonResponse
     {
         $rooms = CustomQuestion::query()
-            ->select('room', 'title', 'is_public')
+            ->select('room', 'title', 'is_public', 'view_count')
             ->groupBy('room')
             ->orderBy('updated_at', 'desc')
             ->where('is_public', true)
