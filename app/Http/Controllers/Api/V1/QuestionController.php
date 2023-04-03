@@ -127,7 +127,7 @@ class QuestionController extends BaseController
             $answer_letters = explode(',', $qa['answer']);
             foreach ($answer_letters as $answer_letter) {
                 $answer_letter = mb_strtolower(mb_substr(trim($answer_letter), 0, 1));
-                if ($answer_letter !== $qa['character']) {
+                if ($answer_letter !== mb_strtolower($qa['character'])) {
                     $letter_errors[] = '\''.$qa['question'][0].'\' sorusunu cevabı \''.$qa['character'].'\' ile başlamalı.';
                 }
             }
