@@ -200,7 +200,7 @@ class QuestionController extends BaseController
         $rooms = CustomQuestion::query()
             ->select('room', 'title', 'is_public')
             ->groupBy('room')
-            ->orderBy('id', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->where('is_public', true)
             ->get();
 
