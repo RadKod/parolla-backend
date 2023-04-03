@@ -170,13 +170,15 @@ class QuestionController extends BaseController
         $room = $request->get('room');
 
         $question = CustomQuestion::query()
-            ->select('id', 'qa_list', 'title', 'is_public')
+            ->select('id', 'qa_list', 'title', 'is_public', 'view_count')
             ->where('room', $room)
             ->first();
 
         if (!$question) {
             return $this->sendError('Validation Error.', ['Oda bulunamadı.']);
         }
+
+        $question->increment('view_count');
 
         $alphabet = [];
         foreach ($question->qa_list as $qa) {
@@ -187,6 +189,7 @@ class QuestionController extends BaseController
             [
                 'title' => $question->title,
                 'is_public' => $question->is_public,
+                'view_count' => $question->view_count,
                 'alphabet' => $alphabet,
                 'questions' => CustomQuestionResource::collection($question->qa_list),
             ],

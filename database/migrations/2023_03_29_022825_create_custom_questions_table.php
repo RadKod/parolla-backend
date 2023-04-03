@@ -18,6 +18,7 @@ class CreateCustomQuestionsTable extends Migration
             $table->string('title');
             $table->json('qa_list');
             $table->string('room');
+            $table->integer('view_count')->default(0);
             $table->boolean('is_public')->default(false);
             $table->timestamps();
         });
