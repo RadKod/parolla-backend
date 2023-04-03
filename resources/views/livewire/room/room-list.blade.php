@@ -30,6 +30,7 @@
                            target="_blank" class="btn btn-primary">
                             API Url
                         </a>
+                        view count: {{ $customQuestion->view_count }}
                     </div>
                 </div>
             </div>

@@ -126,9 +126,17 @@ class QuestionController extends BaseController
         foreach ($qa_list as $qa) {
             $answer_letters = explode(',', $qa['answer']);
             foreach ($answer_letters as $answer_letter) {
-                $answer_letter = mb_strtolower(mb_substr(trim($answer_letter), 0, 1));
-                if ($answer_letter !== mb_strtolower($qa['character'])) {
-                    $letter_errors[] = '\''.$qa['question'][0].'\' sorusunu cevabı \''.$qa['character'].'\' ile başlamalı.';
+                # turkish upper replace
+                $answer_letter = str_replace(
+                    array('İ', 'I', 'Ş', 'Ğ', 'Ü', 'Ö', 'Ç'), array('i', 'ı', 'ş', 'ğ', 'ü', 'ö', 'ç'), $answer_letter
+                );
+                $character = str_replace(
+                    array('İ', 'I', 'Ş', 'Ğ', 'Ü', 'Ö', 'Ç'), array('i', 'ı', 'ş', 'ğ', 'ü', 'ö', 'ç'), $qa['character']
+                );
+
+                $answer_letter = mb_strtolower(mb_substr(trim($answer_letter), 0, 1), 'UTF-8');
+                if ($answer_letter !== mb_strtolower($character, 'UTF-8')) {
+                    $letter_errors[] = '\''.$qa['question'].'\' sorusunu cevabı \''.$qa['character'].'\' ile başlamalı.';
                 }
             }
         }
