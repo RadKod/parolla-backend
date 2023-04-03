@@ -10,7 +10,7 @@
                                 Delete
                             </button>
                             {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
-                            <a href="https://www.parolla.app/room/id={{$customQuestion->room}}" target="_blank">
+                            <a href="https://www.parolla.app/room?id={{$customQuestion->room}}" target="_blank">
                                 {{ $customQuestion->title }}
                             </a>
                         </h5>
@@ -20,7 +20,7 @@
                         </button>
                         <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}"
                            target="_blank" class="btn btn-primary">
-                            API URL
+                            API Url
                         </a>
                     </div>
                 </div>
