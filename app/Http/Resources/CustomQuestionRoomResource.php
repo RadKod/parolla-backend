@@ -9,7 +9,7 @@ class CustomQuestionRoomResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
-     * Eksi'den sıfıra level atlatan o sorular
+     *
      *
      * @param Request $request
      * @return array
