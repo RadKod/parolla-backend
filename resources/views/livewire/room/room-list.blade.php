@@ -1,4 +1,4 @@
-<div>
+<div wire:poll>
     <div class="row">
         @foreach($customQuestions as $customQuestion)
             <div class="col-sm-6">
