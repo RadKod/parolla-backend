@@ -5,14 +5,22 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
-                                    onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
-                                Delete
-                            </button>
-                            {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
-                            <a href="https://www.parolla.app/room?id={{$customQuestion->room}}" target="_blank">
-                                {{ $customQuestion->title }}
-                            </a>
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
+                                            onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
+                                        Delete
+                                    </button>
+                                    {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <a href="https://www.parolla.app/room?id={{$customQuestion->room}}" target="_blank">
+                                        {{ $customQuestion->title }}
+                                    </a>
+                                </div>
+                            </div>
                         </h5>
                         <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
                                 data-toggle="modal" data-target="#showDetail">
