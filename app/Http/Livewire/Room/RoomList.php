@@ -16,7 +16,18 @@ class RoomList extends Component
             ->groupBy('room')
             ->orderBy('updated_at', 'desc')
             ->get();
-        return view('livewire.room.room-list', compact('customQuestions'));
+        $publicRoomCount = 0;
+        $privateRoomCount = 0;
+        foreach ($customQuestions as $customQuestion) {
+            if ($customQuestion->is_public) {
+                $publicRoomCount++;
+            } else {
+                $privateRoomCount++;
+            }
+        }
+        return view(
+            'livewire.room.room-list', compact('customQuestions', 'publicRoomCount', 'privateRoomCount')
+        );
     }
 
     public function selectRoom($room)

@@ -1,5 +1,20 @@
 <div wire:poll>
     <div class="row">
+        <div class="col-12">
+            <ul>
+                <li>
+                    Public Room Count: {{ $publicRoomCount }}
+                </li>
+                <li>
+                    Private Room Count: {{ $privateRoomCount }}
+                </li>
+                <li>
+                    Total Room Count: {{ $publicRoomCount + $privateRoomCount }}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
         @foreach($customQuestions as $customQuestion)
             <div class="col-sm-6">
                 <div class="card mb-3">
@@ -30,7 +45,7 @@
                            target="_blank" class="btn btn-primary">
                             API Url
                         </a>
-                        view count: {{ $customQuestion->view_count }}
+                        view count: {{ round($customQuestion->view_count / 1000, 3) }}
                     </div>
                 </div>
             </div>
