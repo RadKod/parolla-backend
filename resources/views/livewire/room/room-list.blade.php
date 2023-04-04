@@ -1,14 +1,14 @@
 <div wire:poll>
-    <div class="row">
-        <div class="col-12">
-            <ul>
-                <li>
+    <div class="row mb-2">
+        <div class="col-12 d-flex justify-content-center">
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item">
                     Public Room Count: {{ $publicRoomCount }}
                 </li>
-                <li>
+                <li class="list-group-item">
                     Private Room Count: {{ $privateRoomCount }}
                 </li>
-                <li>
+                <li class="list-group-item">
                     Total Room Count: {{ $publicRoomCount + $privateRoomCount }}
                 </li>
             </ul>
