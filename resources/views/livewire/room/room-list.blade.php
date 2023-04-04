@@ -26,7 +26,10 @@
                                             onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
                                         Delete
                                     </button>
-                                    {{ $customQuestion->is_public ? '(Public)' : '(Private)' }}
+                                    {{ $customQuestion->is_public ? 'Public' : 'Private' }}
+                                    <input type="checkbox"
+                                           wire:click.prevent="changeRoomType('{{$customQuestion->room}}')"
+                                    {{ $customQuestion->is_public ? 'checked' : '' }}>
                                 </div>
                             </div>
                             <div class="row">

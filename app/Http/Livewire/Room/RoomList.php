@@ -49,4 +49,13 @@ class RoomList extends Component
             ->delete();
         $this->selectedRoom = [];
     }
+
+    public function changeRoomType($room)
+    {
+        $customQuestion = CustomQuestion::query()
+            ->where('room', $room)
+            ->first();
+        $customQuestion->is_public = !$customQuestion->is_public;
+        $customQuestion->save();
+    }
 }
