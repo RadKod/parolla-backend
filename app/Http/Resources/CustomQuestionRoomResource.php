@@ -18,6 +18,7 @@ class CustomQuestionRoomResource extends JsonResource
     {
         return [
             'title' => $this->title,
+            'lang' => $this->lang,
             'is_public' => $this->is_public,
             'view_count' => (int)$this->view_count,
             'room' => $this->room,

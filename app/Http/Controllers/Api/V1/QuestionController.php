@@ -152,6 +152,7 @@ class QuestionController extends BaseController
 
         $create_question = new CustomQuestion();
         $create_question->title = $title;
+        $create_question->lang = app()->getLocale();
         $create_question->is_public = $is_public;
         $create_question->room = $room;
         $create_question->qa_list = $qa_list;
@@ -178,7 +179,7 @@ class QuestionController extends BaseController
         $room = $request->get('room');
 
         $question = CustomQuestion::query()
-            ->select('id', 'qa_list', 'title', 'is_public', 'view_count')
+            ->select('id', 'qa_list', 'title', 'is_public', 'view_count', 'lang')
             ->where('room', $room)
             ->first();
 
@@ -208,10 +209,11 @@ class QuestionController extends BaseController
     public function rooms(): JsonResponse
     {
         $rooms = CustomQuestion::query()
-            ->select('room', 'title', 'is_public', 'view_count')
+            ->select('room', 'title', 'is_public', 'view_count', 'lang')
             ->groupBy('room')
             ->orderBy('updated_at', 'desc')
             ->where('is_public', true)
+            ->where('lang', app()->getLocale())
             ->get();
 
         return $this->sendResponse(
