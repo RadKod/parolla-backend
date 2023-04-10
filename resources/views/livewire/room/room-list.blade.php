@@ -21,6 +21,13 @@
                         @endforeach
                     </select>
                 </li>
+                <li class="list-group-item">
+                    <select wire:model="roomType" class="form-control">
+                        <option value="all">Room Type: All</option>
+                        <option value="1">public</option>
+                        <option value="0">private</option>
+                    </select>
+                </li>
             </ul>
         </div>
     </div>
@@ -32,10 +39,6 @@
                         <h5 class="card-title">
                             <div class="row">
                                 <div class="col-12 mb-2">
-                                    <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
-                                            onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
-                                        Delete
-                                    </button>
                                     {{ $customQuestion->is_public ? 'Public' : 'Private' }}
                                     <input type="checkbox"
                                            wire:click.prevent="changeRoomType('{{$customQuestion->room}}')"
@@ -49,22 +52,44 @@
                                         srcset="https://flagcdn.com/32x24/{{ $customQuestion->lang }}.png 2x,
     https://flagcdn.com/48x36/{{ $customQuestion->lang }}.png 3x"
                                         width="16"
-                                        height="12">
+                                        height="12"> ~
                                     <a href="https://www.parolla.app/room?id={{$customQuestion->room}}" target="_blank">
                                         {{ $customQuestion->title }}
                                     </a>
                                 </div>
                             </div>
                         </h5>
-                        <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
-                                data-toggle="modal" data-target="#showDetail">
-                            Show Detail
-                        </button>
-                        <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}"
-                           target="_blank" class="btn btn-primary">
-                            API Url
-                        </a>
-                        view count: {{ round($customQuestion->view_count / 1000, 3) }}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
+                                        data-toggle="modal" data-target="#showDetail">
+                                    Show Detail
+                                </button>
+                                <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}"
+                                   target="_blank" class="btn btn-primary">
+                                    API Url
+                                </a>
+                            </div>
+                            <div>
+                                👁️
+                                {{ number_format($customQuestion->view_count, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                🥰 {{ count($customQuestion->qa_list) }} Questions ~
+                                {{ $customQuestion->created_at->diffForHumans() }}
+                            </div>
+                            <div>
+                                <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
+                                        onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
             </div>

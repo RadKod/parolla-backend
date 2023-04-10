@@ -20,6 +20,7 @@ class CustomQuestionRoomResource extends JsonResource
             'title' => $this->title,
             'lang' => $this->lang,
             'is_public' => $this->is_public,
+            'question_count' => count($this->qa_list),
             'view_count' => (int)$this->view_count,
             'room' => $this->room,
         ];

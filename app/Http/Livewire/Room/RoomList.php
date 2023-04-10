@@ -9,14 +9,18 @@ class RoomList extends Component
 {
     public $selectedRoom = [];
     public $selectedLang = 'all';
+    public $roomType = 'all';
 
     public function render()
     {
         $customQuestions = CustomQuestion::query()
             ->groupBy('room')
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->when($this->selectedLang !== 'all', function ($query) {
                 $query->where('lang', $this->selectedLang);
+            })
+            ->when($this->roomType !== 'all', function ($query) {
+                $query->where('is_public', (bool) $this->roomType);
             })
             ->get();
         $langs = CustomQuestion::query()
