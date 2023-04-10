@@ -8,14 +8,22 @@ use Livewire\Component;
 class RoomList extends Component
 {
     public $selectedRoom = [];
+    public $selectedLang = 'all';
 
     public function render()
     {
-        // CustomQuestion group by room
         $customQuestions = CustomQuestion::query()
             ->groupBy('room')
             ->orderBy('updated_at', 'desc')
+            ->when($this->selectedLang !== 'all', function ($query) {
+                $query->where('lang', $this->selectedLang);
+            })
             ->get();
+        $langs = CustomQuestion::query()
+            ->select('lang')
+            ->groupBy('lang')
+            ->get();
+        $langs = $langs->pluck('lang')->toArray();
         $publicRoomCount = 0;
         $privateRoomCount = 0;
         foreach ($customQuestions as $customQuestion) {
@@ -26,7 +34,10 @@ class RoomList extends Component
             }
         }
         return view(
-            'livewire.room.room-list', compact('customQuestions', 'publicRoomCount', 'privateRoomCount')
+            'livewire.room.room-list', compact(
+                'customQuestions', 'publicRoomCount', 'privateRoomCount',
+                'langs'
+            )
         );
     }
 

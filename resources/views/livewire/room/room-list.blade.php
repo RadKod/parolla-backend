@@ -11,6 +11,16 @@
                 <li class="list-group-item">
                     Total Room Count: {{ $publicRoomCount + $privateRoomCount }}
                 </li>
+                <li class="list-group-item">
+                    <select wire:model="selectedLang" class="form-control">
+                        <option value="all">Language: All</option>
+                        @foreach($langs as $lang)
+                            <option value="{{ $lang }}">
+                                {{ $lang }}
+                            </option>
+                        @endforeach
+                    </select>
+                </li>
             </ul>
         </div>
     </div>
@@ -34,6 +44,12 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
+                                    <img
+                                        src="https://flagcdn.com/16x12/{{ $customQuestion->lang }}.png"
+                                        srcset="https://flagcdn.com/32x24/{{ $customQuestion->lang }}.png 2x,
+    https://flagcdn.com/48x36/{{ $customQuestion->lang }}.png 3x"
+                                        width="16"
+                                        height="12">
                                     <a href="https://www.parolla.app/room?id={{$customQuestion->room}}" target="_blank">
                                         {{ $customQuestion->title }}
                                     </a>

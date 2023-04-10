@@ -198,6 +198,7 @@ class QuestionController extends BaseController
             [
                 'title' => $question->title,
                 'is_public' => $question->is_public,
+                'lang' => $question->lang,
                 'view_count' => $question->view_count,
                 'alphabet' => $alphabet,
                 'questions' => CustomQuestionResource::collection($question->qa_list),
