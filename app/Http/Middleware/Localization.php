@@ -24,7 +24,9 @@ class Localization
             /**
              * If Accept-Language header found then set it to the default locale
              */
-            App::setLocale($request->header("Accept-Language"));
+            $lang = $request->header("Accept-Language");
+            $lang = explode(',', $lang)[0];
+            App::setLocale($lang);
         }
         return $next($request);
     }
