@@ -26,6 +26,7 @@ class Localization
              */
             $lang = $request->header("Accept-Language");
             $lang = explode(',', $lang)[0];
+            $lang = explode('-', $lang)[0];
             App::setLocale($lang);
         }
         return $next($request);
