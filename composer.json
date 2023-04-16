@@ -21,7 +21,8 @@
         "laravel/ui": "^3.2",
         "livewire/livewire": "^2.0",
         "mehradsadeghi/laravel-filter-querystring": "^1.1",
-        "ext-json": "*"
+        "ext-json": "*",
+      "ext-intl": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

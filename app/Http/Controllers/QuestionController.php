@@ -22,4 +22,9 @@ class QuestionController extends Controller
     {
         return view('room.index');
     }
+
+    public function pools()
+    {
+        return view('question.pools');
+    }
 }

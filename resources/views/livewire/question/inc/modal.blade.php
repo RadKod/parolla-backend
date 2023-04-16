@@ -3,19 +3,28 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">{{ $cr_question_id ? 'Update' : 'Create' }} Question</h5>
+                <h5 class="modal-title" id="exampleModalLabel">{{ $cr_question_id ?? '' ? 'Update' : 'Create' }} Question</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
+                @if(session()->has('message'))
+                    <div class="alert {{session('alert') ?? 'alert-info'}} alert-dismissible fade show" role="alert">
+                        {{ session('message') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
                 <form>
                     <input type="hidden" wire:model="question_id">
 
                     <div class="form-row">
                         <div class="col-6">
                             <label for="cr_question">Question</label>
-                            <input type="text" class="form-control" id="cr_question" wire:model="cr_question"
+                            <input type="text" class="form-control" id="cr_question"
+                                   wire:model="cr_question"
                                    placeholder="Question">
                             @error('cr_question') <span class="text-danger">{{ $message }}</span>@enderror
                         </div>

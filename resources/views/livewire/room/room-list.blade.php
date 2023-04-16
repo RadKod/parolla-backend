@@ -78,7 +78,7 @@
                         <hr>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                🥰 {{ count($customQuestion->qa_list) }} Questions ~
+                                {{ count($customQuestion->qa_list) }} Questions ~
                                 {{ $customQuestion->created_at->diffForHumans() }}
                             </div>
                             <div>

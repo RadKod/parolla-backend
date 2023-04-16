@@ -90,6 +90,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     ]);
 
     Route::get('rooms', [QuestionController::class, 'rooms'])->name('rooms');
+    Route::get('pools', [QuestionController::class, 'pools'])->name('pools');
 
     Route::resource('calendar', CalendarController::class)->names([
         'index' => 'calendar'

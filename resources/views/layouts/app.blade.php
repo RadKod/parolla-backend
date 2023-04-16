@@ -53,6 +53,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('pools') ? 'active' : '' }}"
+                           href="{{ route('pools') }}">
+                            {{ __('Pools') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('clear-cache') ? 'active' : '' }}"
                            onclick="return confirm('Are you sure?')"
                            href="{{ route('clear-cache') }}">
