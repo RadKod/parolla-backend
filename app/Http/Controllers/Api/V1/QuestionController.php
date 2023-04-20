@@ -24,7 +24,7 @@ class QuestionController extends BaseController
     {
         $today = Carbon::now();
         $yesterday = $today->copy()->subDay();
-        $days_15_ago = $today->copy()->subDays(15);
+        $days_15_ago = $today->copy()->subDays(16);
 
         $yesterdayCacheKey = 'questions_' . $yesterday->toDateString();
         $todayCacheKey = 'questions_' . $today->toDateString();
@@ -55,6 +55,15 @@ class QuestionController extends BaseController
                 ->with(['alphabet'])
                 ->groupBy('alphabet_id')
                 ->get();
+
+            if (count($questions) < 28) {
+                $questions = Question::query()
+                    ->select('id', 'alphabet_id', 'question', 'answer')
+                    ->from(DB::raw("($subFromQuery) as sub"))
+                    ->with(['alphabet'])
+                    ->orderBy('alphabet_id')
+                    ->get();
+            }
 
             // get question ids
             $questionIds = $questions->pluck('id')->toArray();
