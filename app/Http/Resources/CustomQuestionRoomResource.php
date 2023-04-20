@@ -24,6 +24,9 @@ class CustomQuestionRoomResource extends JsonResource
             'question_count' => count($this->qa_list),
             'view_count' => (int)$this->view_count,
             'room' => $this->room,
+            'review_count' => $this->reviews->count(),
+            'rating' => $this->reviews->avg('rating'),
+            'user' => !$this->is_anon ? new UserResource($this->user) : null,
         ];
     }
 }

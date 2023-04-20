@@ -121,6 +121,7 @@ class QuestionController extends BaseController
         $validator = Validator::make($request->all(), [
             'room_title' => 'required|string|max:64',
             'is_public' => 'required|boolean',
+            'is_anon' => 'boolean',
             'qa_list' => 'required|array',
             'qa_list.*' => 'required|array',
             'qa_list.*.character' => 'required|string|size:1',
@@ -132,6 +133,8 @@ class QuestionController extends BaseController
         }
 
         $qa_list = $request->get('qa_list');
+        $fingerprint = $request->get('fingerprint');
+        $is_anon = $request->get('is_anon') ?? false;
 
         $letter_errors = [];
         foreach ($qa_list as $qa) {
@@ -165,6 +168,8 @@ class QuestionController extends BaseController
         $create_question->title = $title;
         $create_question->lang = app()->getLocale();
         $create_question->is_public = $is_public;
+        $create_question->fingerprint = $fingerprint;
+        $create_question->is_anon = $is_anon;
         $create_question->room = $room;
         $create_question->qa_list = $qa_list;
         $create_question->save();
@@ -222,7 +227,11 @@ class QuestionController extends BaseController
     public function rooms(): JsonResponse
     {
         $rooms = CustomQuestion::query()
-            ->select('id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at')
+            ->select([
+                'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
+                'is_anon', 'fingerprint'
+            ])
+            ->with(['reviews', 'user'])
             ->groupBy('room')
             ->orderBy('updated_at', 'desc')
             ->where('is_public', true)

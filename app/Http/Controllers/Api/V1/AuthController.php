@@ -49,6 +49,9 @@ class AuthController extends BaseController
     {
         $fingerprint = $request->get('fingerprint');
         $username = $request->get('username');
+        if (!$username) {
+            $username = 'gamer' . random_int(1000, 9999);
+        }
         $validator = Validator::make($request->all(), [
             'username' => 'string|unique:users,username'.($fingerprint ? ','.$fingerprint.',fingerprint' : ''),
             'fingerprint' => 'required|string',
