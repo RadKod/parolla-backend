@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Resources\CustomQuestionResource;
 use App\Http\Resources\CustomQuestionRoomResource;
 use App\Http\Resources\QuestionResource;
+use App\Http\Resources\ReviewResource;
 use App\Models\CustomQuestion;
 use App\Models\Question;
+use App\Models\Review;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -220,7 +222,7 @@ class QuestionController extends BaseController
     public function rooms(): JsonResponse
     {
         $rooms = CustomQuestion::query()
-            ->select('room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at')
+            ->select('id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at')
             ->groupBy('room')
             ->orderBy('updated_at', 'desc')
             ->where('is_public', true)
@@ -232,6 +234,55 @@ class QuestionController extends BaseController
                 'rooms' => CustomQuestionRoomResource::collection($rooms),
             ],
             'Rooms retrieved successfully.'
+        );
+    }
+
+    public function reviews($room_id): JsonResponse
+    {
+        $reviews = Review::query()
+            ->select('id', 'room_id', 'fingerprint', 'content', 'rating', 'created_at')
+            ->where('room_id', $room_id)
+            ->with(['user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->sendResponse(
+            [
+                'reviews' => ReviewResource::collection($reviews),
+            ],
+            'Reviews retrieved successfully.'
+        );
+    }
+
+    public function reviews_store(Request $request, $room_id): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|max:255',
+            'rating' => 'required|integer|min:1|max:5',
+            'fingerprint' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors()->all());
+        }
+
+        $content = $request->get('content');
+        $rating = $request->get('rating');
+        $fingerprint = $request->get('fingerprint');
+
+        $review = new Review();
+        $review->room_id = $room_id;
+        $review->fingerprint = $fingerprint;
+        $review->content = $content;
+        $review->rating = $rating;
+        $review->save();
+
+        return $this->sendResponse(
+            [
+                'content' => $content,
+                'rating' => $rating,
+                'fingerprint' => $fingerprint,
+            ],
+            'Review created successfully.'
         );
     }
 }

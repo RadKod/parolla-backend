@@ -17,6 +17,7 @@ class CustomQuestionRoomResource extends JsonResource
     public function toArray($request): array
     {
         return [
+            'id' => $this->id,
             'title' => $this->title,
             'lang' => $this->lang,
             'is_public' => $this->is_public,

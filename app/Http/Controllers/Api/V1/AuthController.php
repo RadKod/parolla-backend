@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -36,7 +37,7 @@ class AuthController extends BaseController
         }
 
         return $this->sendResponse(
-            $user,
+            new UserResource($user),
             'User found'
         );
     }
@@ -76,7 +77,7 @@ class AuthController extends BaseController
         ]);
 
         return $this->sendResponse(
-            $user,
+            new UserResource($user),
             'User updated'
         );
     }

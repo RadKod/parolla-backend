@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware("localization")->group(function () {
     Route::prefix('v1')->group(function () {
-        Route::post('/auth/register', [AuthController::class, 'register'])->name('api.register');
         Route::get('/auth/me', [AuthController::class, 'me'])->name('api.me');
-        Route::put('/auth/me', [AuthController::class, 'update'])->name('api.update');
+        Route::put('/auth/me', [AuthController::class, 'update'])->name('api.update')
+            ->middleware(['throttle:2,1']);
 
         Route::get('/alphabet', [AlphabetController::class, 'index'])->name('api.alphabet');
         Route::get('/questions', [QuestionController::class, 'index'])->name('api.questions');
@@ -29,5 +29,7 @@ Route::middleware("localization")->group(function () {
             ->name('api.modes.custom_store')->middleware(['throttle:5,1']);
         Route::get('/modes/custom', [QuestionController::class, 'custom_get'])->name('api.modes.custom_get');
         Route::get('/rooms', [QuestionController::class, 'rooms'])->name('api.rooms');
+        Route::get('/rooms/{room}/reviews', [QuestionController::class, 'reviews'])->name('api.reviews');
+        Route::post('/rooms/{room}/reviews', [QuestionController::class, 'reviews_store'])->name('api.reviews');
     });
 });
