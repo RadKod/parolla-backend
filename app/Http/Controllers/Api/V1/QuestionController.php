@@ -30,8 +30,9 @@ class QuestionController extends BaseController
 
         $yesterdayCacheKey = 'questions_' . $yesterday->toDateString();
         $todayCacheKey = 'questions_' . $today->toDateString();
+        $isCache = false;
 
-        if (Cache::has($todayCacheKey)) {
+        if (Cache::has($todayCacheKey) && $isCache) {
             $questionIds = Cache::get($todayCacheKey);
             $questions = Question::query()
                 ->select('id', 'alphabet_id', 'question', 'answer')
@@ -58,12 +59,12 @@ class QuestionController extends BaseController
                 ->groupBy('alphabet_id')
                 ->get();
 
-            if (count($questions) < 28) {
+            if (count($questions) < 29) {
                 $questions = Question::query()
                     ->select('id', 'alphabet_id', 'question', 'answer')
                     ->from(DB::raw("($subFromQuery) as sub"))
                     ->with(['alphabet'])
-                    ->orderBy('alphabet_id')
+                    ->groupBy('alphabet_id')
                     ->get();
             }
 
