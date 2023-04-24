@@ -1,4 +1,4 @@
-<div wire:poll>
+<div wire:poll.10000ms>
     <div class="row mb-2">
         <div class="col-12 d-flex justify-content-center">
             <ul class="list-group list-group-horizontal">
@@ -53,7 +53,9 @@
     https://flagcdn.com/48x36/{{ $customQuestion->lang }}.png 3x"
                                         width="16"
                                         height="12"> ~
-                                    <a href="https://www.parolla.app/room?id={{$customQuestion->room}}" target="_blank">
+                                    <a href="https://www.parolla.app/room?id={{$customQuestion->room}}"
+                                       data-toggle="tooltip" data-html="true" title="@foreach($customQuestion->qa_list as $qa_item){{ $qa_item['question'] }}: {{ $qa_item['answer'] }} <br>@endforeach"
+                                       target="_blank">
                                         {{ $customQuestion->title }}
                                     </a>
                                 </div>
