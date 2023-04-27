@@ -22,6 +22,8 @@ Route::middleware("localization")->group(function () {
         Route::put('/auth/me', [AuthController::class, 'update'])->name('api.update')
             ->middleware(['throttle:2,1']);
 
+        Route::get('/statistics', [QuestionController::class, 'statistics'])->name('api.statistics');
+
         Route::get('/alphabet', [AlphabetController::class, 'index'])->name('api.alphabet');
         Route::get('/questions', [QuestionController::class, 'index'])->name('api.questions');
         Route::get('/modes/unlimited', [QuestionController::class, 'unlimited'])->name('api.modes.unlimited');

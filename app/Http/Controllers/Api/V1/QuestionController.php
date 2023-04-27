@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\CustomQuestion;
 use App\Models\Question;
 use App\Models\Review;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -146,7 +147,7 @@ class QuestionController extends BaseController
 
                 $answer_letter = mb_strtolower(mb_substr(trim($answer_letter), 0, 1), 'UTF-8');
                 if ($answer_letter !== mb_strtolower($character, 'UTF-8')) {
-                    $letter_errors[] = '\''.$qa['question'].'\' sorusunu cevabı \''.$qa['character'].'\' ile başlamalı.';
+                    $letter_errors[] = '\'' . $qa['question'] . '\' sorusunu cevabı \'' . $qa['character'] . '\' ile başlamalı.';
                 }
             }
         }
@@ -191,7 +192,7 @@ class QuestionController extends BaseController
         $room = $request->get('room');
 
         $question = CustomQuestion::query()
-            ->select('id', 'qa_list', 'title', 'is_public', 'view_count', 'lang')
+            ->select('id', 'room', 'qa_list', 'title', 'is_public', 'view_count', 'lang')
             ->where('room', $room)
             ->first();
 
@@ -209,6 +210,7 @@ class QuestionController extends BaseController
         return $this->sendResponse(
             [
                 'id' => $question->id,
+                'room' => $question->room,
                 'title' => $question->title,
                 'is_public' => $question->is_public,
                 'lang' => $question->lang,
@@ -233,7 +235,7 @@ class QuestionController extends BaseController
             ])
             ->with(['reviews', 'user'])
             ->groupBy('room')
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('id', 'desc')
             ->where('is_public', true)
             ->where('lang', app()->getLocale())
             ->get();
@@ -251,12 +253,18 @@ class QuestionController extends BaseController
         $reviews = Review::query()
             ->select('id', 'room_id', 'fingerprint', 'content', 'rating', 'created_at')
             ->where('room_id', $room_id)
-            ->with(['user'])
+            ->with(['user', 'room' => function ($query) {
+                $query->select('id', 'room', 'title', 'is_public', 'view_count',
+                    'lang', 'updated_at', 'is_anon', 'fingerprint');
+            }])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return $this->sendResponse(
             [
+                'rating' => (float)number_format($reviews->avg('rating'), 1),
+                'review_count' => $reviews->count(),
+                'room' => $reviews->first() ? $reviews->first()->room : null,
                 'reviews' => ReviewResource::collection($reviews),
             ],
             'Reviews retrieved successfully.'
@@ -293,5 +301,38 @@ class QuestionController extends BaseController
             ],
             'Review created successfully.'
         );
+    }
+
+    public function statistics(): array
+    {
+        $total_public_questions = CustomQuestion::query()
+            ->select('id')
+            ->where('is_public', true)
+            ->count();
+
+        $total_private_questions = CustomQuestion::query()
+            ->select('id')
+            ->where('is_public', false)
+            ->count();
+
+        $total_public_reviews = Review::query()
+            ->select('id')
+            ->count();
+
+        $total_users = User::query()
+            ->select('id')
+            ->count();
+
+        $total_room_view_count = CustomQuestion::query()
+            ->select('id')
+            ->sum('view_count');
+        return [
+            'total_public_custom_rooms' => $total_public_questions,
+            'total_private_custom_rooms' => $total_private_questions,
+            'total_custom_rooms' => $total_public_questions + $total_private_questions,
+            'total_custom_room_view_count' => number_format($total_room_view_count, 0, ',', '.'),
+            'total_reviews' => $total_public_reviews,
+            'total_users' => $total_users,
+        ];
     }
 }

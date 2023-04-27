@@ -58,12 +58,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <img
-                                        src="https://flagcdn.com/16x12/{{ $customQuestion->lang }}.png"
-                                        srcset="https://flagcdn.com/32x24/{{ $customQuestion->lang }}.png 2x,
-    https://flagcdn.com/48x36/{{ $customQuestion->lang }}.png 3x"
-                                        width="16"
-                                        height="12"> ~
+                                    ({{ $customQuestion->lang }}) ~
                                     <a href="https://www.parolla.app/room?id={{$customQuestion->room}}"
                                        data-toggle="tooltip" data-html="true"
                                        title="@foreach($customQuestion->qa_list as $qa_item){{ $qa_item['question'] }}: {{ $qa_item['answer'] }} <br>@endforeach"
