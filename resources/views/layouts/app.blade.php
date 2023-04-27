@@ -78,6 +78,9 @@
                             <a class="dropdown-item" target="_blank" href="{{ route('api.modes.unlimited') }}">
                                 Unlimited
                             </a>
+                            <a class="dropdown-item" target="_blank" href="{{ route('api.rooms') }}">
+                                Rooms
+                            </a>
                         </div>
                     </li>
                 </ul>

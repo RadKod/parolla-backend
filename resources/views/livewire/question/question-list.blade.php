@@ -30,12 +30,13 @@
                    placeholder="Search question.."
             />
         </div>
-        <div class="col-3">
+        <div class="col-2">
             <input type="checkbox" wire:model="release_at" class="form-check-input" id="asked_questions">
-            <label for="asked_questions">Questions to be asked within 15 days</label>
+            <label for="asked_questions">Unpublished</label>
         </div>
         <div class="col-3">
-            <input type="checkbox" wire:model="not_matched_filter_for_letter_answer" class="form-check-input" id="not_matched_filter_for_letter_answer">
+            <input type="checkbox" wire:model="not_matched_filter_for_letter_answer" class="form-check-input"
+                   id="not_matched_filter_for_letter_answer">
             <label for="not_matched_filter_for_letter_answer">Not matched filter for letter & answer</label>
         </div>
 
@@ -61,7 +62,7 @@
                         <th>Letter</th>
                         <th>Question</th>
                         <th>Answer</th>
-                        <th>Release At</th>
+                        <th>Published / Unpublished</th>
                         <th style="width: 150px">Action</th>
                     </tr>
                     </thead>
@@ -73,17 +74,18 @@
                             <td>{{ $question->question }}</td>
                             <td>{{ $question->answer }}</td>
                             <td>
-                                @if($question->release_at)
-                                    {{ $question->release_at->format('d-m-Y') }}
-                                    <br>
-                                    next release at
-                                    <br>
-                                    {{ $question->release_at->addDays(15)->format('d-m-Y') }}
-                                @else
-                                    <span class="text-danger"
-                                          wire:click.prevent="update_release_at_question('{{$question->id}}')"
-                                          style="cursor:pointer;">Not set</span>
-                                @endif
+                                <span wire:click.prevent="update_release_at_question('{{$question->id}}')"
+                                      style="cursor:pointer;">
+                                    @if($question->release_at)
+                                        <span class="badge badge-success">
+                                            Published
+                                        </span>
+                                    @else
+                                        <span class="badge badge-danger">
+                                            Unpublished
+                                        </span>
+                                    @endif
+                                </span>
                             </td>
                             <td>
                                 <button data-toggle="modal" data-target="#crudModal_post"

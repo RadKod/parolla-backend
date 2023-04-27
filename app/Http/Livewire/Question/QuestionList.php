@@ -99,7 +99,7 @@ class QuestionList extends Component
     public function update_release_at_question($question_id): void
     {
         $question = Question::query()->find($question_id);
-        $question->release_at = now();
+        $question->release_at = $question->release_at ? null : now();
         $question->save();
     }
 

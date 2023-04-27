@@ -6,6 +6,7 @@ use App\Http\Resources\CustomQuestionResource;
 use App\Http\Resources\CustomQuestionRoomResource;
 use App\Http\Resources\QuestionResource;
 use App\Http\Resources\ReviewResource;
+use App\Http\Resources\UserResource;
 use App\Models\CustomQuestion;
 use App\Models\Question;
 use App\Models\Review;
@@ -25,10 +26,6 @@ class QuestionController extends BaseController
     public function index(): JsonResponse
     {
         $today = Carbon::now();
-        $yesterday = $today->copy()->subDay();
-        $days_15_ago = $today->copy()->subDays(16);
-
-        $yesterdayCacheKey = 'questions_' . $yesterday->toDateString();
         $todayCacheKey = 'questions_' . $today->toDateString();
 
         if (Cache::has($todayCacheKey)) {
@@ -41,28 +38,37 @@ class QuestionController extends BaseController
                 ->get();
         } else {
             $excludes = Question::query()
-                ->select('id')
-                ->whereBetween('release_at', [$days_15_ago, $today])
-                ->get()
+                ->whereNotNull('release_at')
                 ->pluck('id')
-                ->toArray();
+                ->all();
 
-            $subFromQuery = Question::query()
-                ->select('id', 'alphabet_id', 'question', 'answer')
-                ->inRandomOrder()->toSql();
-            $questions = Question::query()
-                ->select('id', 'alphabet_id', 'question', 'answer')
+            $subQuery = Question::query()
+                ->inRandomOrder()
+                ->select('id')
                 ->whereNotIn('id', $excludes)
-                ->from(DB::raw("($subFromQuery) as sub"))
-                ->with(['alphabet'])
+                ->limit(1000);
+
+            $questions = Question::query()
+                ->select('questions.id', 'questions.alphabet_id', 'questions.question', 'questions.answer')
+                ->joinSub($subQuery, 'sub', function ($join) {
+                    $join->on('questions.id', '=', 'sub.id');
+                })
+                ->with('alphabet')
                 ->groupBy('alphabet_id')
                 ->get();
 
-            if ($questions->count() < 29) {
-                $questions = Question::query()
-                    ->select('id', 'alphabet_id', 'question', 'answer')
-                    ->from(DB::raw("($subFromQuery) as sub"))
-                    ->with(['alphabet'])
+            // if not enough questions, get all questions
+            if ($questions->count() < 26) {
+                $subQuery = Question::query()
+                    ->inRandomOrder()
+                    ->select('id')
+                    ->limit(1000);
+
+                $questions = Question::select('questions.id', 'questions.alphabet_id', 'questions.question', 'questions.answer')
+                    ->joinSub($subQuery, 'sub', function ($join) {
+                        $join->on('questions.id', '=', 'sub.id');
+                    })
+                    ->with('alphabet')
                     ->groupBy('alphabet_id')
                     ->get();
             }
@@ -72,16 +78,6 @@ class QuestionController extends BaseController
             // update release_at
             Question::query()->whereIn('id', $questionIds)->update(['release_at' => $today]);
 
-//            $questions = Question::query()
-//                ->select('id', 'alphabet_id', 'question', 'answer')
-//                ->whereNotIn('id', $excludes)
-//                ->whereIn('id', Question::query()
-//                    ->selectRaw('MIN(id)')->groupBy('alphabet_id')->toBase())
-//                ->inRandomOrder()
-//                ->orderBy('alphabet_id')
-//                ->get();
-
-            Cache::forget($yesterdayCacheKey);
             Cache::flush();
             Cache::forever($todayCacheKey, $questionIds);
         }
@@ -212,11 +208,15 @@ class QuestionController extends BaseController
 
         return $this->sendResponse(
             [
+                'id' => $question->id,
                 'title' => $question->title,
                 'is_public' => $question->is_public,
                 'lang' => $question->lang,
                 'view_count' => $question->view_count,
                 'question_count' => count($question->qa_list),
+                'review_count' => $question->reviews->count(),
+                'rating' => $question->reviews->avg('rating'),
+                'user' => !$question->is_anon && $question->user ? new UserResource($question->user) : null,
                 'alphabet' => $alphabet,
                 'questions' => CustomQuestionResource::collection($question->qa_list),
             ],

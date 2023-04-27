@@ -23,6 +23,37 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/test', function () {
+    $excludes = Question::whereNotNull('release_at')
+        ->pluck('id')
+        ->all();
+
+//    $subQuery = Question::inRandomOrder()
+//        ->select('id')
+//        ->whereNotIn('id', $excludes)
+//        ->limit(1000);
+
+//    $questions = Question::select('questions.id', 'questions.alphabet_id', 'questions.question', 'questions.answer')
+//        ->joinSub($subQuery, 'sub', function ($join) {
+//            $join->on('questions.id', '=', 'sub.id');
+//        })
+//        ->with('alphabet')
+//        ->groupBy('alphabet_id')
+//        ->get();
+
+    $subQuery = Question::inRandomOrder()
+        ->select('id')
+        ->limit(1000);
+
+    $questions = Question::select('questions.id', 'questions.alphabet_id', 'questions.question', 'questions.answer')
+        ->joinSub($subQuery, 'sub', function ($join) {
+            $join->on('questions.id', '=', 'sub.id');
+        })
+        ->with('alphabet')
+        ->groupBy('alphabet_id')
+        ->get();
+    dd($questions->count(), $questions->map->only(['id', 'question', 'answer'])->toArray());
+});
 Route::get('/change_cache', function () {
     $question = Question::query()->find(1);
     $question->release_at = now()->subDays(20);
@@ -101,7 +132,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/clear-cache', function() {
         Artisan::call('cache:clear');
-        Question::query()->update(['release_at' => null]);
+//        Question::query()->update(['release_at' => null]);
         return redirect()->back()->with('status', 'Cache Cleared!');
     })->name('clear-cache');
 });

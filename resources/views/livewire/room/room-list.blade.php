@@ -39,10 +39,21 @@
                         <h5 class="card-title">
                             <div class="row">
                                 <div class="col-12 mb-2">
-                                    {{ $customQuestion->is_public ? 'Public' : 'Private' }}
-                                    <input type="checkbox"
-                                           wire:click.prevent="changeRoomType('{{$customQuestion->room}}')"
-                                    {{ $customQuestion->is_public ? 'checked' : '' }}>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            {{ $customQuestion->is_public ? 'Public' : 'Private' }}
+                                            <input type="checkbox"
+                                                   wire:click.prevent="changeRoomType('{{$customQuestion->room}}')"
+                                                {{ $customQuestion->is_public ? 'checked' : '' }}>
+                                        </div>
+                                        <div>
+                                            <small>rating / reviews</small>
+                                            <span class="badge badge-primary">
+                                                {{ $customQuestion->reviews->avg('rating') ?? '-' }} / {{ $customQuestion->reviews->count() }}
+                                            </span>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="row">
@@ -54,7 +65,8 @@
                                         width="16"
                                         height="12"> ~
                                     <a href="https://www.parolla.app/room?id={{$customQuestion->room}}"
-                                       data-toggle="tooltip" data-html="true" title="@foreach($customQuestion->qa_list as $qa_item){{ $qa_item['question'] }}: {{ $qa_item['answer'] }} <br>@endforeach"
+                                       data-toggle="tooltip" data-html="true"
+                                       title="@foreach($customQuestion->qa_list as $qa_item){{ $qa_item['question'] }}: {{ $qa_item['answer'] }} <br>@endforeach"
                                        target="_blank">
                                         {{ $customQuestion->title }}
                                     </a>
@@ -63,14 +75,16 @@
                         </h5>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <button class="btn btn-primary" wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
+                                <button class="btn btn-primary"
+                                        wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
                                         data-toggle="modal" data-target="#showDetail">
-                                    Show Detail
+                                    Show Questions
                                 </button>
-                                <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}"
-                                   target="_blank" class="btn btn-primary">
-                                    API Url
-                                </a>
+                                <button class="btn btn-primary"
+                                        wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
+                                        data-toggle="modal" data-target="#showDetail">
+                                    Show Reviews
+                                </button>
                             </div>
                             <div>
                                 👁️
@@ -84,7 +98,16 @@
                                 {{ $customQuestion->created_at->diffForHumans() }}
                             </div>
                             <div>
-                                <button class="btn btn-danger btn-sm" wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
+                                <a href="{{route('api.modes.custom_get')}}?room={{$customQuestion->room}}"
+                                   target="_blank" class="badge badge-primary">
+                                    API Url
+                                </a>
+                                <a href="{{route('api.reviews', $customQuestion->id)}}?room={{$customQuestion->room}}"
+                                   target="_blank" class="badge badge-primary">
+                                    Reviews API Url
+                                </a>
+                                <button class="btn btn-danger btn-sm"
+                                        wire:click.prevent="deleteRoom('{{$customQuestion->room}}')"
                                         onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">
                                     Delete
                                 </button>
@@ -110,14 +133,14 @@
                 </div>
                 <div class="modal-body">
                     @if($selectedRoom)
-                    <ul>
-                        @foreach($selectedRoom->qa_list as $qa_item)
-                            <li>
-                                ({{$qa_item['character']}}) {{ $qa_item['question'] }}
-                                <br> {{ $qa_item['answer'] }}
-                            </li>
-                        @endforeach
-                    </ul>
+                        <ul>
+                            @foreach($selectedRoom->qa_list as $qa_item)
+                                <li>
+                                    ({{$qa_item['character']}}) {{ $qa_item['question'] }}
+                                    <br> {{ $qa_item['answer'] }}
+                                </li>
+                            @endforeach
+                        </ul>
                     @endif
                 </div>
                 <div class="modal-footer">
