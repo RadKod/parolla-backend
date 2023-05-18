@@ -115,6 +115,11 @@
             </div>
         @endforeach
     </div>
+    <div class="row">
+        <div class="col-12">
+            {{ $customQuestions->links('pagination::bootstrap-4') }}
+        </div>
+    </div>
     <div wire:ignore.self class="modal fade" id="showDetail" tabindex="-1" role="dialog"
          aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">

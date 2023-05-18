@@ -4,9 +4,13 @@ namespace App\Http\Livewire\Room;
 
 use App\Models\CustomQuestion;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class RoomList extends Component
 {
+
+    use WithPagination;
+
     public $selectedRoom = [];
     public $selectedLang = 'all';
     public $roomType = 'all';
@@ -21,22 +25,20 @@ class RoomList extends Component
             })
             ->when($this->roomType !== 'all', function ($query) {
                 $query->where('is_public', (bool) $this->roomType);
-            })
-            ->get();
+            })->paginate(10);
+
         $langs = CustomQuestion::query()
             ->select('lang')
             ->groupBy('lang')
             ->get();
         $langs = $langs->pluck('lang')->toArray();
-        $publicRoomCount = 0;
-        $privateRoomCount = 0;
-        foreach ($customQuestions as $customQuestion) {
-            if ($customQuestion->is_public) {
-                $publicRoomCount++;
-            } else {
-                $privateRoomCount++;
-            }
-        }
+
+        $publicRoomCount = CustomQuestion::query()
+            ->where('is_public', 1)
+            ->count();
+        $privateRoomCount = CustomQuestion::query()
+            ->where('is_public', 0)
+            ->count();
         return view(
             'livewire.room.room-list', compact(
                 'customQuestions', 'publicRoomCount', 'privateRoomCount',

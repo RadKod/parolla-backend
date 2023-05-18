@@ -24,7 +24,8 @@ class Alphabet extends Model
 
     public function releasesQuestions(): HasMany
     {
-        $date = now()->subDays(15)->toDateString();
-        return $this->hasMany(Question::class)->where('release_at', '<=', $date)->orWhereNull('release_at');
+        return $this->hasMany(Question::class)->whereNull('release_at');
+//        $date = now()->subDays(15)->toDateString();
+//        return $this->hasMany(Question::class)->where('release_at', '<=', $date)->orWhereNull('release_at');
     }
 }

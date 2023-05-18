@@ -226,8 +226,9 @@ class QuestionController extends BaseController
         );
     }
 
-    public function rooms(): JsonResponse
+    public function rooms(Request $request): JsonResponse
     {
+        $per_page = $request->get('per_page') ?? 10;
         $rooms = CustomQuestion::query()
             ->select([
                 'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
@@ -238,11 +239,16 @@ class QuestionController extends BaseController
             ->orderBy('id', 'desc')
             ->where('is_public', true)
             ->where('lang', app()->getLocale())
-            ->get();
+            ->cursorPaginate($per_page);
 
         return $this->sendResponse(
             [
                 'rooms' => CustomQuestionRoomResource::collection($rooms),
+                'pagination' => [
+                    'per_page' => $rooms->perPage(),
+                    'next_page_url' => $rooms->nextPageUrl(),
+                    'prev_page_url' => $rooms->previousPageUrl(),
+                ]
             ],
             'Rooms retrieved successfully.'
         );
