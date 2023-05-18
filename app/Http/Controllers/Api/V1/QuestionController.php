@@ -239,7 +239,7 @@ class QuestionController extends BaseController
             ->orderBy('id', 'desc')
             ->where('is_public', true)
             ->where('lang', app()->getLocale())
-            ->cursorPaginate($per_page);
+            ->cursorPaginate($per_page)->withQueryString();
 
         return $this->sendResponse(
             [
