@@ -241,9 +241,20 @@ class QuestionController extends BaseController
             ->where('lang', app()->getLocale())
             ->cursorPaginate($per_page)->withQueryString();
 
+        $total_count = CustomQuestion::query()
+            ->select([
+                'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
+                'is_anon', 'fingerprint'
+            ])
+            ->orderBy('id', 'desc')
+            ->where('is_public', true)
+            ->where('lang', app()->getLocale())
+            ->count();
+
         return $this->sendResponse(
             [
                 'rooms' => CustomQuestionRoomResource::collection($rooms),
+                'total' => $total_count,
                 'pagination' => [
                     'per_page' => $rooms->perPage(),
                     'next_page_url' => $rooms->nextPageUrl(),

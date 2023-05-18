@@ -28,6 +28,9 @@
                         <option value="0">private</option>
                     </select>
                 </li>
+                <li class="list-group-item">
+                    <input type="text" wire:model="searchTerm" class="form-control" placeholder="Search">
+                </li>
             </ul>
         </div>
     </div>
