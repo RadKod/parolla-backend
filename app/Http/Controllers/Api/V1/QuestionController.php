@@ -241,10 +241,7 @@ class QuestionController extends BaseController
             ->where('is_public', true)
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('room', 'like', '%' . $search . '%')
-                    ->orWhereHas('user', function ($query) use ($search) {
-                        return $query->where('name', 'like', '%' . $search . '%');
-                    });
+                    ->orWhere('room', 'like', '%' . $search . '%');
             })
             ->where('lang', app()->getLocale())
             ->cursorPaginate($per_page)->withQueryString();
