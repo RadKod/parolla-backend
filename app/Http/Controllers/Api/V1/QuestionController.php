@@ -229,6 +229,7 @@ class QuestionController extends BaseController
     public function rooms(Request $request): JsonResponse
     {
         $per_page = $request->get('per_page') ?? 10;
+        $search = $request->get('search') ?? null;
         $rooms = CustomQuestion::query()
             ->select([
                 'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
@@ -238,6 +239,13 @@ class QuestionController extends BaseController
             ->groupBy('room')
             ->orderBy('id', 'desc')
             ->where('is_public', true)
+            ->when($search, function ($query, $search) {
+                return $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('room', 'like', '%' . $search . '%')
+                    ->orWhereHas('user', function ($query) use ($search) {
+                        return $query->where('name', 'like', '%' . $search . '%');
+                    });
+            })
             ->where('lang', app()->getLocale())
             ->cursorPaginate($per_page)->withQueryString();
 
