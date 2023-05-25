@@ -45,7 +45,7 @@
                 <button type="button" data-toggle="tooltip" data-placement="top" data-html="true"
                         title="total questions: {{ $alphabet_item->questions->count() }} <br> unpublished question: {{ $alphabet_item->releasesQuestions->count() }} <br> published question: {{ $alphabet_item->questions->count() - $alphabet_item->releasesQuestions->count() }}"
                         wire:click.prevent="filter_by_alphabet('{{$alphabet_item->id}}')"
-                        class="btn {{$filter_alphabet_id === $alphabet_item->id ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm">
+                        class="btn {{$filter_alphabet_id === $alphabet_item->id ? 'btn-success' : 'btn-primary'}} btn-circle btn-sm {{ $alphabet_item->releasesQuestions->count() === 0 ? 'btn-outline-danger' : '' }}">
                     {{$alphabet_item->name}}
                 </button>
             @endforeach
