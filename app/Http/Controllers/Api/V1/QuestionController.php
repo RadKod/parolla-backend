@@ -230,6 +230,7 @@ class QuestionController extends BaseController
     {
         $per_page = $request->get('per_page') ?? 10;
         $search = $request->get('search') ?? null;
+        $lang = $request->get('lang') ?? app()->getLocale();
         $rooms = CustomQuestion::query()
             ->select([
                 'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
@@ -239,12 +240,13 @@ class QuestionController extends BaseController
             ->groupBy('room')
             ->orderBy('id', 'desc')
             ->where('is_public', true)
+            ->where('lang', $lang)
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', '%' . $search . '%')
                     ->orWhere('room', 'like', '%' . $search . '%');
             })
-            ->where('lang', app()->getLocale())
             ->cursorPaginate($per_page)->withQueryString();
+
 
         $total_count = CustomQuestion::query()
             ->select([
