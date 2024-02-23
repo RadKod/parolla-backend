@@ -116,7 +116,7 @@ class Pool extends Component
         ]);
 
         # has answer
-        $has_answer = Question::query()->where('answer', 'like', '%' . $this->cr_answer . '%')->first();
+        $has_answer = Question::query()->where('answer', $this->cr_answer)->first();
         if ($has_answer) {
             $this->emit('closeModal');
             session()->flash('message', 'Bu cevap zaten mevcut.');

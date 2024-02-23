@@ -10,11 +10,18 @@ class RoomList extends Component
 {
 
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
 
     public $selectedRoom = [];
     public $selectedLang = 'all';
     public $roomType = 'all';
     public $searchTerm = '';
+
+    public function mount(): void
+    {
+        $this->selectedLang = request()->query('selectedLang', $this->selectedLang);
+        $this->roomType = request()->query('roomType', $this->roomType);
+    }
 
     public function render()
     {

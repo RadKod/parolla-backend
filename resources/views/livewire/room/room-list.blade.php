@@ -120,7 +120,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            {{ $customQuestions->links('pagination::bootstrap-4') }}
+            {{ $customQuestions->links() }}
         </div>
     </div>
     <div wire:ignore.self class="modal fade" id="showDetail" tabindex="-1" role="dialog"
