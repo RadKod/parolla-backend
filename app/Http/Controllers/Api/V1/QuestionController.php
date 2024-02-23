@@ -6,10 +6,12 @@ use App\Http\Resources\CustomQuestionResource;
 use App\Http\Resources\CustomQuestionRoomResource;
 use App\Http\Resources\QuestionResource;
 use App\Http\Resources\ReviewResource;
+use App\Http\Resources\RoomStatisticResource;
 use App\Http\Resources\UserResource;
 use App\Models\CustomQuestion;
 use App\Models\Question;
 use App\Models\Review;
+use App\Models\RoomStatistic;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -359,4 +361,64 @@ class QuestionController extends BaseController
             'total_users' => $total_users,
         ];
     }
+
+    public function room_statistics($room_id): JsonResponse
+    {
+        $room = CustomQuestion::query()
+            ->select('id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
+                'is_anon', 'fingerprint')
+            ->where('id', $room_id)
+            ->first();
+
+        if (!$room) {
+            return $this->sendError('Validation Error.', ['Oda bulunamadı.'], 404);
+        }
+
+        $statistics = RoomStatistic::query()
+            ->select('id', 'fingerprint', 'room_id', 'game_result')
+            ->where('room_id', $room_id)
+            ->with(['user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->sendResponse(
+            RoomStatisticResource::collection($statistics),
+            'Room statistics retrieved successfully.'
+        );
+    }
+
+    public function room_statistics_store(Request $request, $room_id): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'game_result' => 'required|array',
+            'fingerprint' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors()->all());
+        }
+
+        $game_result = $request->get('game_result');
+        $room = CustomQuestion::query()
+            ->select('id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
+                'is_anon', 'fingerprint')
+            ->where('id', $room_id)
+            ->first();
+
+        if (!$room) {
+            return $this->sendError('Validation Error.', ['Oda bulunamadı.'], 404);
+        }
+
+        $room_statistic = new RoomStatistic();
+        $room_statistic->room_id = $room_id;
+        $room_statistic->fingerprint = $request->get('fingerprint');
+        $room_statistic->game_result = $game_result;
+        $room_statistic->save();
+
+        return $this->sendResponse(
+            new RoomStatisticResource($room_statistic),
+            'Room statistic created successfully.'
+        );
+    }
+
+
 }

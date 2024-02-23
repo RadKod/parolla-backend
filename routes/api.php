@@ -33,5 +33,7 @@ Route::middleware("localization")->group(function () {
         Route::get('/rooms', [QuestionController::class, 'rooms'])->name('api.rooms');
         Route::get('/rooms/{room}/reviews', [QuestionController::class, 'reviews'])->name('api.reviews');
         Route::post('/rooms/{room}/reviews', [QuestionController::class, 'reviews_store'])->name('api.reviews');
+        Route::get('/rooms/{room}/statistics', [QuestionController::class, 'room_statistics'])->name('api.room_statistics');
+        Route::post('/rooms/{room}/statistics', [QuestionController::class, 'room_statistics_store'])->name('api.room_statistics_store');
     });
 });
