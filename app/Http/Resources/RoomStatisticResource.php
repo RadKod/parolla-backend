@@ -21,6 +21,7 @@ class RoomStatisticResource extends JsonResource
             'fingerprint' => $this->fingerprint,
             'room_id' => $this->room_id,
             'game_result' => $this->game_result,
+            'score' => $this->score,
             'user' => new UserResource($this->user)
         ];
     }

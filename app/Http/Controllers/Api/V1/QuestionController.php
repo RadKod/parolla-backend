@@ -413,9 +413,29 @@ class QuestionController extends BaseController
         //            }
         //        }
 
-        $statistics = $statistics->sortByDesc(function ($statistic) {
-            return count($statistic->game_result['correctAnswers']) - count($statistic->game_result['wrongAnswers']) - count($statistic->game_result['passedAnswers']) + $statistic->game_result['remainTimeAsMs'];
+        $statistics = $statistics->map(function ($statistic) {
+            $correctCount = count($statistic->game_result['correctAnswers'] ?? []);
+            $wrongCount = count($statistic->game_result['wrongAnswers'] ?? []);
+            $passedCount = count($statistic->game_result['passedAnswers'] ?? []);
+            $timeScore = $statistic->game_result['remainTimeAsMs'] ?? 0; // Assuming higher time is better
+
+            // Define weights
+            $weightCorrect = 5;  // High positive impact
+            $weightWrong = -2;   // Moderate negative impact
+            $weightPassed = -1;  // Low negative impact
+            $timeWeight = 0.001; // Small bonus for remaining time
+
+            // Calculate score
+            $statistic->score = ($correctCount * $weightCorrect) +
+                ($wrongCount * $weightWrong) +
+                ($passedCount * $weightPassed) +
+                ($timeScore * $timeWeight);
+
+            return $statistic;
         });
+
+        // Sort by the newly calculated score
+        $statistics = $statistics->sortByDesc('score');
 
         return $this->sendResponse(
             RoomStatisticResource::collection($statistics),
