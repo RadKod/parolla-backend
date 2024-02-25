@@ -381,6 +381,42 @@ class QuestionController extends BaseController
             ->orderBy('created_at', 'desc')
             ->get();
 
+
+        // {
+        //            "id": 4,
+        //            "fingerprint": "3229108507",
+        //            "room_id": "7306",
+        //            "game_result": {
+        //                "correctAnswers": [],
+        //                "wrongAnswers": [
+        //                    {
+        //                        "index": 0,
+        //                        "letter": "B",
+        //                        "isPassed": false,
+        //                        "isWrong": true,
+        //                        "isCorrect": false
+        //                    }
+        //                ],
+        //                "passedAnswers": [],
+        //                "remainTime": {
+        //                    "days": 0,
+        //                    "hours": 0,
+        //                    "minutes": 4,
+        //                    "seconds": 54,
+        //                    "milliseconds": 995
+        //                },
+        //                "remainTimeAsMs": 294995
+        //            },
+        //            "user": {
+        //                "username": "gamer9977",
+        //                "fingerprint": "3229108507"
+        //            }
+        //        }
+
+        $statistics = $statistics->sortByDesc(function ($statistic) {
+            return count($statistic->game_result['correctAnswers']) - count($statistic->game_result['wrongAnswers']) - count($statistic->game_result['passedAnswers']) + $statistic->game_result['remainTimeAsMs'];
+        });
+
         return $this->sendResponse(
             RoomStatisticResource::collection($statistics),
             'Room statistics retrieved successfully.'
@@ -406,6 +442,15 @@ class QuestionController extends BaseController
 
         if (!$room) {
             return $this->sendError('Validation Error.', ['Oda bulunamadı.'], 404);
+        }
+
+        $is_played = RoomStatistic::query()
+            ->where('room_id', $room_id)
+            ->where('fingerprint', $request->get('fingerprint'))
+            ->exists();
+
+        if ($is_played) {
+            return $this->sendError('Validation Error.', ['Bu oyunu daha önce oynadınız.']);
         }
 
         $room_statistic = new RoomStatistic();
