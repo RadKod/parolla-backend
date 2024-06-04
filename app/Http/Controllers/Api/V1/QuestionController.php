@@ -233,31 +233,39 @@ class QuestionController extends BaseController
         $per_page = $request->get('per_page') ?? 10;
         $search = $request->get('search') ?? null;
         $lang = $request->get('lang') ?? app()->getLocale();
+        $sort = $request->get('sort') ?? 'newest';
+
         $rooms = CustomQuestion::query()
             ->select([
-                'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
+                'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'created_at',
                 'is_anon', 'fingerprint'
             ])
             ->with(['reviews', 'user'])
-            ->groupBy('room')
-            ->orderBy('id', 'desc')
             ->where('is_public', true)
             ->where('lang', $lang)
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', '%' . $search . '%')
                     ->orWhere('room', 'like', '%' . $search . '%');
-            })
-            ->cursorPaginate($per_page)->withQueryString();
+            });
 
+        switch ($sort) {
+            case 'most_played':
+                $rooms->orderBy('view_count', 'desc');
+                break;
+            case 'oldest':
+                $rooms->orderBy('created_at', 'asc');
+                break;
+            case 'newest':
+            default:
+                $rooms->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $rooms = $rooms->cursorPaginate($per_page)->withQueryString();
 
         $total_count = CustomQuestion::query()
-            ->select([
-                'id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
-                'is_anon', 'fingerprint'
-            ])
-            ->orderBy('id', 'desc')
             ->where('is_public', true)
-            ->where('lang', app()->getLocale())
+            ->where('lang', $lang)
             ->count();
 
         return $this->sendResponse(
@@ -273,6 +281,7 @@ class QuestionController extends BaseController
             'Rooms retrieved successfully.'
         );
     }
+
 
     public function reviews($room_id): JsonResponse
     {
