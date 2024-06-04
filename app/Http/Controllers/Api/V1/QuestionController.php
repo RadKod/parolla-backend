@@ -255,7 +255,6 @@ class QuestionController extends BaseController
             case 'oldest':
                 $rooms->orderBy('created_at', 'asc');
                 break;
-            case 'newest':
             default:
                 $rooms->orderBy('created_at', 'desc');
                 break;
