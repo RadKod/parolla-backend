@@ -96,16 +96,16 @@ class QuestionController extends BaseController
 
     public function unlimited(): JsonResponse
     {
-        $subFromQuery = Question::query()
-            ->select('id', 'alphabet_id', 'question', 'answer')
-            ->inRandomOrder()->toSql();
         $questions = Question::query()
             ->select('id', 'alphabet_id', 'question', 'answer')
-            ->from(DB::raw("($subFromQuery) as sub"))
+            ->inRandomOrder()
             ->with(['alphabet'])
+            ->get()
             ->groupBy('alphabet_id')
-            ->orderBy('alphabet_id')
-            ->get();
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
 
         return $this->sendResponse(
             [
