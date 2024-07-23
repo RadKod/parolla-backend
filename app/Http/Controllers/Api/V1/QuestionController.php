@@ -8,6 +8,7 @@ use App\Http\Resources\QuestionResource;
 use App\Http\Resources\ReviewResource;
 use App\Http\Resources\RoomStatisticResource;
 use App\Http\Resources\UserResource;
+use App\Models\Alphabet;
 use App\Models\CustomQuestion;
 use App\Models\Question;
 use App\Models\Review;
@@ -96,16 +97,16 @@ class QuestionController extends BaseController
 
     public function unlimited(): JsonResponse
     {
-        $questions = Question::query()
-            ->select('id', 'alphabet_id', 'question', 'answer')
-            ->inRandomOrder()
-            ->with(['alphabet'])
+        $questions = Alphabet::query()
+            ->orderBy('name') // Alfabetik sıralama için
+            ->with(['questions' => function ($query) {
+                $query->inRandomOrder();
+            }])
             ->get()
-            ->groupBy('alphabet_id')
-            ->map(function ($group) {
-                return $group->first();
+            ->map(function ($alphabet) {
+                return $alphabet->questions->first();
             })
-            ->values();
+            ->filter();
 
         return $this->sendResponse(
             [
