@@ -47,7 +47,7 @@
                                             {{ $customQuestion->is_public ? 'Public' : 'Private' }}
                                             <input type="checkbox"
                                                    wire:click.prevent="changeRoomType('{{$customQuestion->room}}')"
-                                                    {{ $customQuestion->is_public ? 'checked' : '' }}>
+                                                {{ $customQuestion->is_public ? 'checked' : '' }}>
                                         </div>
                                         <div>
                                             <small>rating / reviews</small>
@@ -78,11 +78,13 @@
                                         data-toggle="modal" data-target="#showDetail">
                                     Show Questions
                                 </button>
-                                <button class="btn btn-primary"
-                                        wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
-                                        data-toggle="modal" data-target="#showReviews">
-                                    Show Reviews
-                                </button>
+                                @if(count($customQuestion->reviews))
+                                    <button class="btn btn-primary"
+                                            wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
+                                            data-toggle="modal" data-target="#showReviews">
+                                        Show Reviews
+                                    </button>
+                                @endif
                                 @if($customQuestion->device_info)
                                     <button class="btn btn-primary"
                                             wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
