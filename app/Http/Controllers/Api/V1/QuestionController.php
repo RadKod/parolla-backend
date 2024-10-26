@@ -127,6 +127,7 @@ class QuestionController extends BaseController
             'qa_list.*.character' => 'required|string|size:1',
             'qa_list.*.question' => 'required|string|max:120',
             'qa_list.*.answer' => 'required|string|max:120',
+            'device_info' => 'required|string|max:5120',
         ]);
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors()->all());
@@ -163,6 +164,7 @@ class QuestionController extends BaseController
         $room = md5(uniqid(mt_rand(), true));
         $title = $request->get('room_title');
         $is_public = $request->get('is_public');
+        $device_info = $request->get('device_info');
 
         $create_question = new CustomQuestion();
         $create_question->title = $title;
@@ -172,6 +174,7 @@ class QuestionController extends BaseController
         $create_question->is_anon = $is_anon;
         $create_question->room = $room;
         $create_question->qa_list = $qa_list;
+        $create_question->device_info = $device_info;
         $create_question->save();
 
         return $this->sendResponse(
@@ -496,3 +499,4 @@ class QuestionController extends BaseController
 
 
 }
+
