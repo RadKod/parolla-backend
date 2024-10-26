@@ -14,7 +14,7 @@ class AddDeviceInfoToCustomQuestionsTable extends Migration
     public function up()
     {
         Schema::table('custom_questions', function (Blueprint $table) {
-            $table->text('device_info')->nullable()->after('is_anon');
+            $table->json('device_info')->nullable()->after('is_anon');
         });
     }
 
