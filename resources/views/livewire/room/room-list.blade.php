@@ -178,9 +178,7 @@
                 </div>
                 <div class="modal-body">
                     @if($selectedRoom)
-                        <code>
-                            {{ $selectedRoom->device_info }}
-                        </code>
+                        <pre style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; overflow: auto;"><code>{{ json_encode(json_decode($selectedRoom->device_info), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</code></pre>
                     @endif
                 </div>
                 <div class="modal-footer">
