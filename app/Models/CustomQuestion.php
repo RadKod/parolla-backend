@@ -17,7 +17,8 @@ class CustomQuestion extends Model
     ];
     protected $casts = [
         'is_public' => 'boolean',
-        'qa_list' => 'array'
+        'qa_list' => 'array',
+        'device_info' => 'array',
     ];
 
     public function user(): BelongsTo
