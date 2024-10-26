@@ -13,7 +13,7 @@ class CustomQuestion extends Model
     protected $table = 'custom_questions';
     protected $fillable = [
         'created_at', 'updated_at', 'room', 'title', 'is_public', 'qa_list', 'view_count', 'lang',
-        'is_anon', 'fingerprint'
+        'is_anon', 'fingerprint', 'device_info'
     ];
     protected $casts = [
         'is_public' => 'boolean',
