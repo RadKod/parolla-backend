@@ -47,7 +47,7 @@
                                             {{ $customQuestion->is_public ? 'Public' : 'Private' }}
                                             <input type="checkbox"
                                                    wire:click.prevent="changeRoomType('{{$customQuestion->room}}')"
-                                                {{ $customQuestion->is_public ? 'checked' : '' }}>
+                                                    {{ $customQuestion->is_public ? 'checked' : '' }}>
                                         </div>
                                         <div>
                                             <small>rating / reviews</small>
@@ -80,9 +80,16 @@
                                 </button>
                                 <button class="btn btn-primary"
                                         wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
-                                        data-toggle="modal" data-target="#showDetail">
+                                        data-toggle="modal" data-target="#showReviews">
                                     Show Reviews
                                 </button>
+                                @if($customQuestion->device_info)
+                                    <button class="btn btn-primary"
+                                            wire:click.prevent="selectRoom('{{$customQuestion->room}}')"
+                                            data-toggle="modal" data-target="#showDeviceInfo">
+                                        Device Info
+                                    </button>
+                                @endif
                             </div>
                             <div>
                                 👁️
@@ -156,3 +163,65 @@
             </div>
         </div>
     </div>
+    <div wire:ignore.self class="modal fade" id="showDeviceInfo" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="exampleModalLabel">{{ $selectedRoom ? $selectedRoom->room : '' }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if($selectedRoom)
+                        <code>
+                            {{ $selectedRoom->device_info }}
+                        </code>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" wire:click.prevent="closeRoom()" class="btn btn-secondary"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div wire:ignore.self class="modal fade" id="showReviews" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        id="exampleModalLabel">{{ $selectedRoom ? $selectedRoom->room : '' }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if($selectedRoom)
+                        <ul>
+                            @foreach($selectedRoom->reviews as $review)
+                                <li>
+                                    user: {{ $review->user->username }}<br>
+                                    rating: {{ $review->rating }}, content: {{ $review->content }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" wire:click.prevent="closeRoom()" class="btn btn-secondary"
+                            data-dismiss="modal">
+                        Close
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
