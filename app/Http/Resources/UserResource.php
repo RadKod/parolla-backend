@@ -17,8 +17,11 @@ class UserResource extends JsonResource
     public function toArray($request): array
     {
         return [
+            'id' => $this->id,
             'username' => $this->username,
             'fingerprint' => $this->fingerprint,
+            # 'email' => $this->when($this->is_permanent, $this->email),
+            'is_permanent' => $this->is_permanent,
         ];
     }
 }
