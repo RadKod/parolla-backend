@@ -17,4 +17,19 @@ return [
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
+    // Custom auth messages
+    'permanent_account' => [
+        'login_required' => 'This account is permanent. Please login with email and password.',
+        'already_permanent' => 'This account is already permanent. Please login with email and password.',
+    ],
+    'user_not_found' => 'User not found',
+    'user_found' => 'User found',
+    'user_updated' => 'User updated successfully',
+    'user_registered' => 'User registered successfully',
+    'login_success' => 'Login successful',
+    'logout_success' => 'Successfully logged out',
+    'token_refreshed' => 'Token refreshed',
+    'invalid_credentials' => 'Invalid credentials',
+    'current_password_incorrect' => 'Current password is incorrect',
+
 ];

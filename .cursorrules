@@ -1,0 +1,113 @@
+# Laravel 8 Project Rules
+
+# PHP Version
+php_version: "^7.3|^8.0"
+
+# Code Style
+psr:
+  - psr-4
+  - psr-12
+
+# Laravel Specific
+laravel:
+  version: "^8.12"
+  structure:
+    - Follow Laravel 8 directory structure
+    - Keep controllers thin, use services for business logic
+    - Use repositories for database queries
+    - Follow RESTful API conventions
+    - Use Laravel resources for API responses
+    - Implement proper request validation
+
+# Naming Conventions
+naming:
+  controllers: PascalCase, suffix with Controller
+  models: PascalCase, singular
+  migrations: snake_case, timestamp prefix
+  tables: snake_case, plural
+  methods: camelCase
+  variables: camelCase
+  constants: SCREAMING_SNAKE_CASE
+
+# Database
+database:
+  - Use migrations for all database changes
+  - Document complex relationships
+  - Index foreign keys
+  - Use appropriate data types
+  - Keep migrations reversible
+
+# API
+api:
+  - Version all endpoints (v1, v2, etc.)
+  - Use proper HTTP status codes
+  - Implement rate limiting where necessary
+  - Document all endpoints
+  - Use proper authentication middleware
+
+# Testing
+testing:
+  - Write unit tests for services
+  - Write feature tests for API endpoints
+  - Maintain test coverage
+  - Use factories for test data
+
+# Security
+security:
+  - Validate all inputs
+  - Sanitize outputs
+  - Use proper authentication
+  - Implement rate limiting
+  - Follow OWASP security guidelines
+
+# Git Rules
+git:
+  commit_message_format:
+    - feat: New features
+    - fix: Bug fixes
+    - docs: Documentation changes
+    - style: Code style changes
+    - refactor: Code refactoring
+    - test: Test related changes
+    - chore: Build process or auxiliary tool changes
+  
+  branch_naming:
+    - feature/: For new features
+    - bugfix/: For bug fixes
+    - hotfix/: For urgent fixes
+    - release/: For release branches
+    
+  workflow:
+    - Create feature branch from develop
+    - Pull request to develop
+    - Merge develop to main for releases
+    - Tag all releases with semantic versioning
+
+# Dependencies
+dependencies:
+  - Keep composer packages updated
+  - Lock package versions
+  - Document major dependency changes
+  - Use composer.lock in version control
+
+# Documentation
+documentation:
+  - Document all API endpoints
+  - Keep README.md updated
+  - Document environment requirements
+  - Include setup instructions
+  - Document custom commands
+
+# Performance
+performance:
+  - Use eager loading to prevent N+1 queries
+  - Implement caching where appropriate
+  - Optimize database queries
+  - Use queue for long-running tasks
+
+# Error Handling
+error_handling:
+  - Use custom exception handlers
+  - Log errors appropriately
+  - Return consistent error responses
+  - Handle edge cases 

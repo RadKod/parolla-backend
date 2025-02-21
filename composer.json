@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "ext-intl": "*",
+        "ext-json": "*",
         "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
@@ -21,8 +23,7 @@
         "laravel/ui": "^3.2",
         "livewire/livewire": "^2.0",
         "mehradsadeghi/laravel-filter-querystring": "^1.1",
-        "ext-json": "*",
-      "ext-intl": "*"
+        "tymon/jwt-auth": "^1.0@dev"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

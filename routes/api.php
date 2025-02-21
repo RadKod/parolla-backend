@@ -22,6 +22,16 @@ Route::middleware("localization")->group(function () {
         Route::put('/auth/me', [AuthController::class, 'update'])->name('api.update')
             ->middleware(['throttle:2,1']);
 
+        // New permanent account routes
+        Route::post('/auth/register', [AuthController::class, 'register'])->name('api.auth.register')
+            ->middleware(['throttle:5,1']);
+        Route::post('/auth/login', [AuthController::class, 'login'])->name('api.auth.login')
+            ->middleware(['throttle:5,1']);
+        Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.auth.logout')
+            ->middleware('auth:api');
+        Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('api.auth.refresh')
+            ->middleware('auth:api');
+
         Route::get('/statistics', [QuestionController::class, 'statistics'])->name('api.statistics');
 
         Route::get('/alphabet', [AlphabetController::class, 'index'])->name('api.alphabet');
