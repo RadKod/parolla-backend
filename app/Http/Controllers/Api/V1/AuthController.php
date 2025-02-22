@@ -54,10 +54,6 @@ class AuthController extends BaseController
             $user = User::query()
                 ->where('fingerprint', $request->get('fingerprint'))
                 ->first();
-
-            if ($response = $this->checkPermanentAccount($user)) {
-                return $response;
-            }
         }
 
         if (!$user) {
