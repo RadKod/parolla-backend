@@ -268,6 +268,7 @@ class AuthController extends BaseController
         try {
             $validator = Validator::make($request->all(), [
                 'code' => 'required|string',
+                'fingerprint' => 'required|string',
             ]);
 
             if ($validator->fails()) {
