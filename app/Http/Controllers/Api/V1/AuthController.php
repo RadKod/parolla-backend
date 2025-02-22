@@ -269,6 +269,7 @@ class AuthController extends BaseController
             $validator = Validator::make($request->all(), [
                 'code' => 'required|string',
                 'fingerprint' => 'required|string',
+                'state' => 'required|string',
             ]);
 
             if ($validator->fails()) {
@@ -277,7 +278,8 @@ class AuthController extends BaseController
 
             $googleUser = Socialite::driver('google')
                 ->stateless()
-                ->user($request->code);  // code'u burada kullanıyoruz
+                ->with(['state' => $request->state])
+                ->user($request->code);
 
             // Kullanıcıyı email'e göre bul veya oluştur
             $user = User::where('email', $googleUser->email)->first();
