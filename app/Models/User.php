@@ -30,7 +30,9 @@ class User extends Authenticatable implements JWTSubject
         'lastname',
         'email',
         'password',
-        'fingerprint'
+        'fingerprint',
+        'is_permanent',
+        'google_id'
     ];
 
     /**

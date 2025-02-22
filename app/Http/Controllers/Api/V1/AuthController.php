@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends BaseController
 {
@@ -254,5 +255,101 @@ class AuthController extends BaseController
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60
         ], __('auth.token_refreshed'));
+    }
+
+    /**
+     * Handle the Google callback with code
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function handleGoogleCallback(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'code' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Error', $validator->errors()->toArray());
+            }
+
+            $googleUser = Socialite::driver('google')
+                ->stateless()
+                ->user($request->code);  // code'u burada kullanıyoruz
+
+            // Kullanıcıyı email'e göre bul veya oluştur
+            $user = User::where('email', $googleUser->email)->first();
+
+            if (!$user) {
+                // Eğer aynı fingerprint ile geçici hesap varsa, onu güncelle
+                if ($request->has('fingerprint')) {
+                    $user = User::where('fingerprint', $request->fingerprint)
+                        ->where('is_permanent', false)
+                        ->first();
+                }
+
+                if (!$user) {
+                    $user = new User();
+                }
+
+                $user->fill([
+                    'username' => $googleUser->name,
+                    'email' => $googleUser->email,
+                    'password' => bcrypt(random_int(100000, 999999)),
+                    'is_permanent' => true,
+                    'google_id' => $googleUser->id,
+                ]);
+
+                if ($request->has('fingerprint')) {
+                    $user->fingerprint = $request->fingerprint;
+                }
+
+                $user->save();
+            } else {
+                // Google ID'yi güncelle
+                $user->update([
+                    'google_id' => $googleUser->id,
+                    'is_permanent' => true,
+                ]);
+
+                // Eğer fingerprint varsa ve kullanıcının fingerprintti yoksa ekle
+                if ($request->has('fingerprint') && !$user->fingerprint) {
+                    $user->update(['fingerprint' => $request->fingerprint]);
+                }
+            }
+
+            // JWT token oluştur
+            $token = Auth::guard('api')->login($user);
+
+            return $this->sendResponse([
+                'user' => new UserResource($user),
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth('api')->factory()->getTTL() * 60
+            ], __('auth.google_login_success'));
+
+        } catch (Exception $e) {
+            return $this->sendError('Google Auth Error', ['error' => $e->getMessage()], 401);
+        }
+    }
+
+    /**
+     * Get Google OAuth URL with state
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function redirectToGoogle(Request $request): JsonResponse
+    {
+        $state = $request->get('state', '');
+        
+        $url = Socialite::driver('google')
+            ->stateless()
+            ->with(['state' => $state])
+            ->redirect()
+            ->getTargetUrl();
+
+        return $this->sendResponse(['url' => $url], __('auth.redirect_to_google'));
     }
 }

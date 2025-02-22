@@ -30,4 +30,8 @@ return [
     'token_refreshed' => 'Token yenilendi',
     'invalid_credentials' => 'Geçersiz kimlik bilgileri',
     'current_password_incorrect' => 'Mevcut şifre yanlış',
+
+    // Google kimlik doğrulama mesajları
+    'redirect_to_google' => 'Google giriş sayfasına yönlendiriliyorsunuz',
+    'google_login_success' => 'Google ile başarıyla giriş yapıldı',
 ]; 

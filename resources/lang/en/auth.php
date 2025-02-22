@@ -32,4 +32,8 @@ return [
     'invalid_credentials' => 'Invalid credentials',
     'current_password_incorrect' => 'Current password is incorrect',
 
+    // Google auth messages
+    'redirect_to_google' => 'Redirecting to Google login page',
+    'google_login_success' => 'Successfully logged in with Google',
+
 ];
