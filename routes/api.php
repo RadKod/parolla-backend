@@ -47,7 +47,6 @@ Route::middleware("localization")->group(function () {
         Route::post('/rooms/{room}/statistics', [QuestionController::class, 'room_statistics_store'])->name('api.room_statistics_store');
 
         // Google OAuth routes
-        Route::get('/auth/google/url', [AuthController::class, 'redirectToGoogle'])->name('api.auth.google.url');
         Route::post('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');
     });
 });

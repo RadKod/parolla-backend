@@ -333,23 +333,4 @@ class AuthController extends BaseController
             return $this->sendError('Google Auth Error', ['error' => $e->getMessage()], 401);
         }
     }
-
-    /**
-     * Get Google OAuth URL with state
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function redirectToGoogle(Request $request): JsonResponse
-    {
-        $state = $request->get('state', '');
-        
-        $url = Socialite::driver('google')
-            ->stateless()
-            ->with(['state' => $state])
-            ->redirect()
-            ->getTargetUrl();
-
-        return $this->sendResponse(['url' => $url], __('auth.redirect_to_google'));
-    }
 }
