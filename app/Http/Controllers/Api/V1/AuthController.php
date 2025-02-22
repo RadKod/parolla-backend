@@ -278,7 +278,10 @@ class AuthController extends BaseController
 
             $googleUser = Socialite::driver('google')
                 ->stateless()
-                ->with(['state' => $request->state])
+                ->with([
+                    'state' => $request->state,
+                    'redirect_uri' => config('services.google.redirect')
+                ])
                 ->user($request->code);
 
             // Kullanıcıyı email'e göre bul veya oluştur
