@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AlphabetController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\QuestionController;
+use App\Http\Controllers\Api\V1\TourScoreController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,6 +46,12 @@ Route::middleware("localization")->group(function () {
         Route::post('/rooms/{room}/reviews', [QuestionController::class, 'reviews_store'])->name('api.reviews');
         Route::get('/rooms/{room}/statistics', [QuestionController::class, 'room_statistics'])->name('api.room_statistics');
         Route::post('/rooms/{room}/statistics', [QuestionController::class, 'room_statistics_store'])->name('api.room_statistics_store');
+
+        // Tur modu puanları rotaları
+        Route::middleware('auth:api')->group(function () {
+            Route::get('/tour/scores', [TourScoreController::class, 'index'])->name('api.tour.scores');
+            Route::post('/tour/scores', [TourScoreController::class, 'store'])->name('api.tour.scores.store');
+        });
 
         // Google OAuth routes
         Route::post('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');

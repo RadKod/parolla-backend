@@ -84,4 +84,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * Kullanıcının tur puanları
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tourScores()
+    {
+        return $this->hasMany(TourScore::class);
+    }
 }
