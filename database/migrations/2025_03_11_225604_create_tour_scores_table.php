@@ -19,9 +19,6 @@ class CreateTourScoresTable extends Migration
             $table->unsignedInteger('score')->default(0);
             $table->date('score_date');
             $table->timestamps();
-
-            // Benzersiz indeks oluştur (user_id ve score_date kombinasyonu benzersiz olmalı)
-            $table->unique(['user_id', 'score_date']);
         });
     }
 

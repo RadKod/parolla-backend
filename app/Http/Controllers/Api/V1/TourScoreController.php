@@ -59,7 +59,7 @@ class TourScoreController extends BaseController
     public function store(Request $request): JsonResponse
     {
         $user = Auth::guard('api')->user();
-
+        
         $validator = Validator::make($request->all(), [
             'score' => 'required|integer|min:0',
             'score_date' => 'date|date_format:Y-m-d',
@@ -68,25 +68,21 @@ class TourScoreController extends BaseController
         if ($validator->fails()) {
             return $this->sendError('Validation Error', $validator->errors()->toArray());
         }
-
+        
         // Tarih belirtilmemişse bugünün tarihini kullan
-        $scoreDate = $request->has('score_date')
-            ? Carbon::parse($request->score_date)
+        $scoreDate = $request->has('score_date') 
+            ? Carbon::parse($request->score_date) 
             : Carbon::today();
-
-        // Aynı tarihte kayıt varsa güncelle, yoksa yeni kayıt oluştur
-        $tourScore = TourScore::updateOrCreate(
-            [
-                'user_id' => $user->id,
-                'score_date' => $scoreDate,
-            ],
-            [
-                'score' => $request->score,
-            ]
-        );
-
+        
+        // Her soru için yeni bir kayıt oluştur
+        $tourScore = TourScore::create([
+            'user_id' => $user->id,
+            'score' => $request->score,
+            'score_date' => $scoreDate,
+        ]);
+        
         return $this->sendResponse(
-            $tourScore,
+            $tourScore, 
             __('messages.tour_score_saved')
         );
     }
