@@ -53,6 +53,9 @@ Route::middleware("localization")->group(function () {
             Route::post('/tour/scores', [TourScoreController::class, 'store'])->name('api.tour.scores.store');
         });
 
+        // Liderlik tablosu - herkes erişebilir, auth gerektirmez
+        Route::get('/tour/leaderboard', [TourScoreController::class, 'leaderboard'])->name('api.tour.leaderboard');
+
         // Google OAuth routes
         Route::post('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');
     });

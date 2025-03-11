@@ -14,4 +14,5 @@ return [
     // Tour mode messages
     'tour_scores_retrieved' => 'Tour scores retrieved successfully',
     'tour_score_saved' => 'Tour score saved successfully',
+    'leaderboard_retrieved' => 'Leaderboard retrieved successfully',
 ];

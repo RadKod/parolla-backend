@@ -91,4 +91,92 @@ class TourScoreController extends BaseController
             __('messages.tour_score_saved')
         );
     }
+
+    /**
+     * Liderlik tablosunu getir (günlük, haftalık, aylık)
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function leaderboard(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'limit' => 'integer|min:1|max:100',
+            'type' => 'string|in:daily,weekly,monthly,all',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error', $validator->errors()->toArray());
+        }
+
+        $limit = $request->input('limit', 10);
+        $type = $request->input('type', 'all');
+        
+        $now = Carbon::now();
+        
+        // Farklı zaman dilimleri için leaderboard hazırla
+        $leaderboards = [];
+        
+        // Günlük liderlik tablosu
+        if ($type === 'daily' || $type === 'all') {
+            $leaderboards['daily'] = $this->getLeaderboardForPeriod(
+                $now->copy()->startOfDay(),
+                $now,
+                $limit
+            );
+        }
+        
+        // Haftalık liderlik tablosu
+        if ($type === 'weekly' || $type === 'all') {
+            $leaderboards['weekly'] = $this->getLeaderboardForPeriod(
+                $now->copy()->startOfWeek(),
+                $now,
+                $limit
+            );
+        }
+        
+        // Aylık liderlik tablosu
+        if ($type === 'monthly' || $type === 'all') {
+            $leaderboards['monthly'] = $this->getLeaderboardForPeriod(
+                $now->copy()->startOfMonth(),
+                $now,
+                $limit
+            );
+        }
+        
+        return $this->sendResponse(
+            $leaderboards,
+            __('messages.leaderboard_retrieved')
+        );
+    }
+
+    /**
+     * Belirli bir zaman aralığı için liderlik tablosu getir
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param int $limit
+     * @return array
+     */
+    private function getLeaderboardForPeriod(Carbon $startDate, Carbon $endDate, int $limit): array
+    {
+        $users = TourScore::with('user:id,username')
+            ->select('user_id')
+            ->selectRaw('SUM(score) as total_score')
+            ->whereBetween('score_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->groupBy('user_id')
+            ->orderByDesc('total_score')
+            ->limit($limit)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'user_id' => $item->user_id,
+                    'username' => $item->user->username,
+                    'score' => $item->total_score,
+                ];
+            })
+            ->toArray();
+            
+        return $users;
+    }
 }
