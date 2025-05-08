@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Room;
 use App\Models\CustomQuestion;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 class RoomList extends Component
 {
@@ -16,6 +17,15 @@ class RoomList extends Component
     public $selectedLang = 'all';
     public $roomType = 'all';
     public $searchTerm = '';
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+
+    protected $queryString = [
+        'selectedLang' => ['except' => 'all'],
+        'roomType' => ['except' => 'all'],
+        'sortField' => ['except' => 'created_at'],
+        'sortDirection' => ['except' => 'desc'],
+    ];
 
     public function mount(): void
     {
@@ -27,7 +37,6 @@ class RoomList extends Component
     {
         $customQuestions = CustomQuestion::query()
             ->groupBy('room')
-            ->orderBy('created_at', 'desc')
             ->when($this->selectedLang !== 'all', function ($query) {
                 $query->where('lang', $this->selectedLang);
             })
@@ -43,8 +52,33 @@ class RoomList extends Component
                     ->orWhereJsonContains('qa_list', [
                         'answer' => $this->searchTerm
                     ]);
-            })
-            ->paginate(10);
+            });
+            
+        // Apply sorting
+        switch ($this->sortField) {
+            case 'reviews_avg':
+                // Kullanım metriğini hesapla: rating'in ağırlığı ve review sayısını birleştirerek
+                // Daha güvenilir bir sıralama sağlayacak bayesian ortalama benzeri formül
+                $customQuestions = $customQuestions
+                    ->withCount('reviews')
+                    ->withAvg('reviews', 'rating')
+                    ->orderByRaw('(IFNULL(reviews_avg_rating, 0) * 
+                                  LEAST(reviews_count, 20) / 20 + 
+                                  (3 * (1 - LEAST(reviews_count, 20) / 20))) DESC');
+                break;
+            case 'view_count':
+                $customQuestions = $customQuestions->orderBy('view_count', $this->sortDirection);
+                break;
+            case 'question_count':
+                // Use a raw query to count the length of the JSON array
+                $customQuestions = $customQuestions->orderByRaw('JSON_LENGTH(qa_list) ' . $this->sortDirection);
+                break;
+            default:
+                $customQuestions = $customQuestions->orderBy($this->sortField, $this->sortDirection);
+                break;
+        }
+            
+        $customQuestions = $customQuestions->paginate(12);
 
         $langs = CustomQuestion::query()
             ->select('lang')
@@ -70,6 +104,16 @@ class RoomList extends Component
                 'langs'
             )
         );
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'desc';
+        }
     }
 
     public function selectRoom($room)
