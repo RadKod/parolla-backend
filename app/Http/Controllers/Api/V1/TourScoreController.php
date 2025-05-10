@@ -88,7 +88,7 @@ class TourScoreController extends BaseController
     }
 
     /**
-     * Liderlik tablosunu getir (günlük, haftalık, aylık)
+     * Liderlik tablosunu getir (günlük, haftalık, aylık, tüm zamanlar)
      *
      * @param Request $request
      * @return JsonResponse
@@ -97,7 +97,7 @@ class TourScoreController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'limit' => 'integer|min:1|max:100',
-            'type' => 'string|in:daily,weekly,monthly,all',
+            'type' => 'string|in:daily,weekly,monthly,all_time,all',
         ]);
 
         if ($validator->fails()) {
@@ -138,6 +138,11 @@ class TourScoreController extends BaseController
                 $limit
             );
         }
+        
+        // Tüm zamanlar liderlik tablosu
+        if ($type === 'all_time' || $type === 'all') {
+            $leaderboards['all_time'] = $this->getAllTimeLeaderboard($limit);
+        }
 
         return $this->sendResponse(
             $leaderboards,
@@ -159,6 +164,33 @@ class TourScoreController extends BaseController
             ->select('user_id')
             ->selectRaw('SUM(score) as total_score')
             ->whereBetween('score_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->groupBy('user_id')
+            ->orderByDesc('total_score')
+            ->limit($limit)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'user_id' => $item->user_id,
+                    'username' => $item->user->username,
+                    'score' => (int)$item->total_score,
+                ];
+            })
+            ->toArray();
+
+        return $users;
+    }
+    
+    /**
+     * Tüm zamanlar için liderlik tablosu getir
+     *
+     * @param int $limit
+     * @return array
+     */
+    private function getAllTimeLeaderboard(int $limit): array
+    {
+        $users = TourScore::with('user:id,username')
+            ->select('user_id')
+            ->selectRaw('SUM(score) as total_score')
             ->groupBy('user_id')
             ->orderByDesc('total_score')
             ->limit($limit)
