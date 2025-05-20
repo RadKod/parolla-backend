@@ -58,5 +58,8 @@ Route::middleware("localization")->group(function () {
 
         // Google OAuth routes
         Route::post('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');
+
+        // User routes
+        Route::get('/user', [UserController::class, 'byFingerprint'])->name('api.user.byFingerprint');
     });
 });
