@@ -11,43 +11,50 @@ use Carbon\Carbon;
 
 class UserController extends BaseController
 {
-    public function byFingerprint(Request $request): JsonResponse
+    /**
+     * Kullanıcıyı id veya fingerprint ile getirir ve skorlarını döndürür
+     *
+     * GET /api/v1/user?id=1  veya  GET /api/v1/user?fingerprint=abc
+     */
+    public function byIdOrFingerprint(Request $request): JsonResponse
     {
+        $id = $request->query('id');
         $fingerprint = $request->query('fingerprint');
-        if (!$fingerprint) {
-            return $this->sendError('Fingerprint is required', [], 400);
+
+        if (!$id && !$fingerprint) {
+            return $this->sendError('id veya fingerprint parametresi zorunludur.', [], 400);
         }
 
-        $user = User::where('fingerprint', $fingerprint)->first();
+        $query = User::query();
+        if ($id) {
+            $user = $query->where('id', $id)->first();
+        } else {
+            $user = $query->where('fingerprint', $fingerprint)->first();
+        }
+
         if (!$user) {
-            return $this->sendError('User not found', [], 404);
+            return $this->sendError('Kullanıcı bulunamadı.', [], 404);
         }
 
         $now = Carbon::now();
 
-        // Günlük başlangıcı ve bitişi
+        // Tarih aralıkları
         $startOfDay = $now->copy()->startOfDay();
         $endOfDay = $now->copy()->endOfDay();
-
-        // Haftalık başlangıcı ve bitişi (Pazartesi - Pazar, Carbon varsayılanı)
         $startOfWeek = $now->copy()->startOfWeek();
         $endOfWeek = $now->copy()->endOfWeek();
-
-        // Aylık başlangıcı ve bitişi
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        // Günlük skor
+        // Skorlar
         $daily = TourScore::where('user_id', $user->id)
             ->whereBetween('score_date', [$startOfDay, $endOfDay])
             ->sum('score');
 
-        // Haftalık skor
         $weekly = TourScore::where('user_id', $user->id)
             ->whereBetween('score_date', [$startOfWeek, $endOfWeek])
             ->sum('score');
 
-        // Aylık skor
         $monthly = TourScore::where('user_id', $user->id)
             ->whereBetween('score_date', [$startOfMonth, $endOfMonth])
             ->sum('score');
@@ -59,6 +66,6 @@ class UserController extends BaseController
                 'weekly' => $weekly,
                 'monthly' => $monthly,
             ],
-        ], 'User and tour scores retrieved successfully');
+        ], 'Kullanıcı ve tur skorları başarıyla getirildi.');
     }
 }
