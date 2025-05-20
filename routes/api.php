@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AlphabetController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\QuestionController;
 use App\Http\Controllers\Api\V1\TourScoreController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,5 +59,8 @@ Route::middleware("localization")->group(function () {
 
         // Google OAuth routes
         Route::post('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('api.auth.google.callback');
+
+        // User routes
+        Route::get('/user', [UserController::class, 'byIdOrFingerprint'])->name('api.user.byIdOrFingerprint');
     });
 });
