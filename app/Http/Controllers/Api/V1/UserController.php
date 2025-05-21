@@ -46,26 +46,60 @@ class UserController extends BaseController
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
-        // Skorlar
-        $daily = TourScore::where('user_id', $user->id)
+        // Skor ve rank hesaplamaları
+        $dailyScore = TourScore::where('user_id', $user->id)
             ->whereBetween('score_date', [$startOfDay, $endOfDay])
             ->sum('score');
+        $dailyRank = $this->getUserRankForPeriod($user->id, $startOfDay, $endOfDay);
 
-        $weekly = TourScore::where('user_id', $user->id)
+        $weeklyScore = TourScore::where('user_id', $user->id)
             ->whereBetween('score_date', [$startOfWeek, $endOfWeek])
             ->sum('score');
+        $weeklyRank = $this->getUserRankForPeriod($user->id, $startOfWeek, $endOfWeek);
 
-        $monthly = TourScore::where('user_id', $user->id)
+        $monthlyScore = TourScore::where('user_id', $user->id)
             ->whereBetween('score_date', [$startOfMonth, $endOfMonth])
             ->sum('score');
+        $monthlyRank = $this->getUserRankForPeriod($user->id, $startOfMonth, $endOfMonth);
+
+        $userArray = $user->toArray();
+        $userArray['tourScores'] = [
+            'daily' => ['score' => $dailyScore, 'rank' => $dailyRank],
+            'weekly' => ['score' => $weeklyScore, 'rank' => $weeklyRank],
+            'monthly' => ['score' => $monthlyScore, 'rank' => $monthlyRank],
+        ];
 
         return $this->sendResponse([
-            'user' => $user,
-            'tourScores' => [
-                'daily' => $daily,
-                'weekly' => $weekly,
-                'monthly' => $monthly,
-            ],
+            'user' => $userArray
         ], 'Kullanıcı ve tur skorları başarıyla getirildi.');
+    }
+
+    /**
+     * Belirli bir zaman aralığı için kullanıcının rank bilgisini döndürür.
+     *
+     * @param int $userId
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return int
+     */
+    private function getUserRankForPeriod($userId, $startDate, $endDate)
+    {
+        // Leaderboard skor listesini topla
+        $scoreList = TourScore::select('user_id')
+            ->selectRaw('SUM(score) as total_score')
+            ->whereBetween('score_date', [$startDate, $endDate])
+            ->groupBy('user_id')
+            ->orderByDesc('total_score')
+            ->get();
+
+        $rank = 1;
+        foreach ($scoreList as $item) {
+            if ($item->user_id == $userId) {
+                return $rank;
+            }
+            $rank++;
+        }
+        // Kullanıcı o periyotta hiç skor yapmamışsa 0 döndür
+        return 0;
     }
 }
