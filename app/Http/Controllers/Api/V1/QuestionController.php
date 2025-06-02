@@ -374,7 +374,7 @@ class QuestionController extends BaseController
         ];
     }
 
-    public function room_statistics($room_id): JsonResponse
+    public function room_statistics(Request $request, $room_id): JsonResponse
     {
         $room = CustomQuestion::query()
             ->select('id', 'room', 'title', 'is_public', 'view_count', 'lang', 'qa_list', 'updated_at',
@@ -386,13 +386,19 @@ class QuestionController extends BaseController
             return $this->sendError('Validation Error.', ['Oda bulunamadı.'], 404);
         }
 
+        $per_page = $request->get('per_page') ?? 10;
+
         $statistics = RoomStatistic::query()
-            ->select('id', 'fingerprint', 'room_id', 'game_result')
+            ->select('id', 'fingerprint', 'room_id', 'game_result', 'created_at')
             ->where('room_id', $room_id)
             ->with(['user'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->cursorPaginate($per_page)
+            ->withQueryString();
 
+        $total_count = RoomStatistic::query()
+            ->where('room_id', $room_id)
+            ->count();
 
         // {
         //            "id": 4,
@@ -425,7 +431,7 @@ class QuestionController extends BaseController
         //            }
         //        }
 
-        $statistics = $statistics->map(function ($statistic) {
+        foreach ($statistics as $statistic) {
             $correctCount = count($statistic->game_result['correctAnswers'] ?? []);
             $wrongCount = count($statistic->game_result['wrongAnswers'] ?? []);
             $passedCount = count($statistic->game_result['passedAnswers'] ?? []);
@@ -442,15 +448,18 @@ class QuestionController extends BaseController
                 ($wrongCount * $weightWrong) +
                 ($passedCount * $weightPassed) +
                 ($timeScore * $timeWeight);
-
-            return $statistic;
-        });
-
-        // Sort by the newly calculated score
-        $statistics = $statistics->sortByDesc('score');
+        }
 
         return $this->sendResponse(
-            RoomStatisticResource::collection($statistics),
+            [
+                'statistics' => RoomStatisticResource::collection($statistics),
+                'total' => $total_count,
+                'pagination' => [
+                    'per_page' => $statistics->perPage(),
+                    'next_page_url' => $statistics->nextPageUrl(),
+                    'prev_page_url' => $statistics->previousPageUrl(),
+                ]
+            ],
             'Room statistics retrieved successfully.'
         );
     }
