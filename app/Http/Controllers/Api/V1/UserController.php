@@ -62,11 +62,16 @@ class UserController extends BaseController
             ->sum('score');
         $monthlyRank = $this->getUserRankForPeriod($user->id, $startOfMonth, $endOfMonth);
 
+        $allTimeScore = TourScore::where('user_id', $user->id)
+            ->sum('score');
+        $allTimeRank = $this->getUserRankForPeriod($user->id, null, null);
+
         $userArray = $user->toArray();
         $userArray['tourScores'] = [
             'daily' => ['score' => $dailyScore, 'rank' => $dailyRank],
             'weekly' => ['score' => $weeklyScore, 'rank' => $weeklyRank],
             'monthly' => ['score' => $monthlyScore, 'rank' => $monthlyRank],
+            'allTime' => ['score' => $allTimeScore, 'rank' => $allTimeRank],
         ];
 
         return $this->sendResponse([
@@ -85,12 +90,17 @@ class UserController extends BaseController
     private function getUserRankForPeriod($userId, $startDate, $endDate)
     {
         // Leaderboard skor listesini topla
-        $scoreList = TourScore::select('user_id')
+        $query = TourScore::select('user_id')
             ->selectRaw('SUM(score) as total_score')
-            ->whereBetween('score_date', [$startDate, $endDate])
             ->groupBy('user_id')
-            ->orderByDesc('total_score')
-            ->get();
+            ->orderByDesc('total_score');
+
+        // Eğer tarih aralığı belirtilmişse filtrele
+        if ($startDate && $endDate) {
+            $query->whereBetween('score_date', [$startDate, $endDate]);
+        }
+
+        $scoreList = $query->get();
 
         $rank = 1;
         foreach ($scoreList as $item) {
