@@ -66,8 +66,9 @@ class UserController extends BaseController
             ->sum('score');
         $allTimeRank = $this->getUserRankForPeriod($user->id, null, null);
 
-        $userArray = $user->toArray();
-        $userArray['tourScores'] = [
+        $userResource = new \App\Http\Resources\UserResource($user);
+        $userData = $userResource->toArray($request);
+        $userData['tourScores'] = [
             'daily' => ['score' => $dailyScore, 'rank' => $dailyRank],
             'weekly' => ['score' => $weeklyScore, 'rank' => $weeklyRank],
             'monthly' => ['score' => $monthlyScore, 'rank' => $monthlyRank],
@@ -75,7 +76,7 @@ class UserController extends BaseController
         ];
 
         return $this->sendResponse([
-            'user' => $userArray
+            'user' => $userData
         ], 'Kullanıcı ve tur skorları başarıyla getirildi.');
     }
 

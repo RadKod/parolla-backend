@@ -22,9 +22,10 @@ class UserResource extends JsonResource
             'fingerprint' => $this->fingerprint,
             # 'email' => $this->when($this->is_permanent, $this->email),
             'is_permanent' => $this->is_permanent,
+            'created_at' => $this->created_at,
             'total_tour_score' => (int) $this->whenLoaded('tourScores', function() {
                 return $this->tourScores->sum('score');
-            }, 
+            },
             function() {
                 // Eğer tourScores yüklenmemişse, veritabanından hesapla
                 return (int) $this->tourScores()->sum('score');
